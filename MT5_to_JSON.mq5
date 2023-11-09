@@ -107,7 +107,7 @@ void ExportTradingHistory()
             }
             
             // Write order as JSON object
-            string json = StringFormat("{\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
+            string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
             FileWrite(handle, json + ",");
             order_index++;
          }
@@ -122,7 +122,7 @@ void ExportTradingHistory()
                ulong order_ticket_for_deal = HistoryDealGetInteger(deal_ticket, DEAL_ORDER);
 
                // Write balance change as JSON object
-               string json = StringFormat("{\"Type\":\"BALANCECHANGE\",\"Order_ID\":%d,\"Time\":%d,\"Amount\":%.2f,\"Balance\":%.2f}", order_ticket_for_deal, deal_time, amount, balance);
+               string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"BALANCECHANGE\",\"Order_ID\":%d,\"Time\":%d,\"Amount\":%.2f,\"Balance\":%.2f}", order_ticket_for_deal, deal_time, amount, balance);
                FileWrite(handle, json + ",");
             }
             deal_index++;
