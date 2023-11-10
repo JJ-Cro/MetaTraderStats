@@ -90,7 +90,7 @@ void ExportTradingHistory()
             datetime close_time = OrderCloseTime();
 
             // Write order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Open_Time\":%d,\"Close_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, close_time, type, price_open, price_current, profit, swap, commission, balance, comment, magic);
+            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Close_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, close_time, type, price_open, price_current, profit, swap, commission, balance, comment, magic);
             FileWrite(handle, json + ",");
          }
       }
@@ -142,7 +142,7 @@ void ExportOpenPositions()
             datetime open_time = OrderOpenTime();
 
             // Write order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Open_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, type, price_open, price_current, profit, swap, commission, comment, magic);
+            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, type, price_open, price_current, profit, swap, commission, comment, magic);
             FileWrite(handle, json + ",");
          }
       }

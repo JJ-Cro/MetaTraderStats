@@ -43,6 +43,7 @@ void OnTick()
    {
       last_minute = time_structure.min;
       ExportTradingHistory();
+      ExportOpenPositions();
    }
 }
 
@@ -130,8 +131,44 @@ void ExportTradingHistory()
       }
 
       // Write end of JSON array
-      FileWrite(handle, "\n]");
+      
+      
+      FileClose(handle);
+   }
+   else
+   {
+      Print("Failed to open file: ", GetLastError());
+   }
+}
 
+
+void ExportOpenPositions()
+{
+   int handle = FileOpen(FileName, FILE_READ|FILE_WRITE|FILE_TXT|FILE_ANSI);
+   if(handle != INVALID_HANDLE)
+   {
+      FileSeek(handle, 0, SEEK_END); // Move the cursor to the end of the file
+
+      int total = PositionsTotal();
+      for(int i = 0; i < total; i++) {
+         ulong ticket = PositionGetTicket(i);
+         if(ticket > 0) {
+            string symbol = PositionGetString(POSITION_SYMBOL);
+            double volume = PositionGetDouble(POSITION_VOLUME);
+            string type = EnumToString((ENUM_ORDER_TYPE)PositionGetInteger(POSITION_TYPE));
+            double price_open = PositionGetDouble(POSITION_PRICE_OPEN);
+            double price_current = PositionGetDouble(POSITION_PRICE_CURRENT);
+            double profit = PositionGetDouble(POSITION_PROFIT);
+            double swap = PositionGetDouble(POSITION_SWAP);
+            double commission = PositionGetDouble(POSITION_COMMISSION);
+            datetime time = TimeCurrent(); // Get the current server time
+            
+            // Write open order as JSON object
+            string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
+            FileWrite(handle, json + ",");
+         }
+      }
+      FileWrite(handle, "\n]");
       FileClose(handle);
    }
    else
