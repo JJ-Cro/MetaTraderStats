@@ -1,16 +1,16 @@
 /* 1. Reports just like the reports generated from mql5 (monthly gain, chart of performance, drawdown, balance, equity, profit etc)
 2. Accumulated Today profit/loss
-3. Details of todays position opened and closed
+3. Details of todays position opened and closed 
 4. Time to report (everyday)
-5. Same as above only for weekly
-6. Same as above only for monthly
-7. Same as above only for All Time
+5. Same as above only for weekly 
+6. Same as above only for monthly 
+7. Same as above only for All Time 
 8. Same as above only for Custom Date
 9. Ability to input the start date (for example: my account is opened from 2010, but i only want to get results start from 5 October 2021 till now) */
 
 /* things to do: 
-change time to "TIME " on all properties
-openorders have time also  in mt4 and mt5
+fix the array at the end of JSON files 
+add total deposits and withdrawals
  */
 
 import fs from 'fs';
@@ -61,15 +61,18 @@ export interface OrderMT4 {
   Symbol: string;
   Volume: number;
   Time: number;
+  Close_Time: number;
   Order_Type: 'SELL' | 'BUY';
   Open_Price: number;
   Current_Price: number;
   Profit: number;
   Swap: number;
   Commission: number;
+  Balance: number;
   Comment: string;
   Magic: number;
 }
+
 export type MT5 = OrderMT5 | OpenOrderMT5 | BalanceChangeMT5;
 export type MT4 = OrderMT4;
 export type JSONHistory = MT5[] | MT4[];
@@ -77,7 +80,7 @@ export type MainObjectType = {
   [key: string]: JSONHistory;
 };
 export interface StatsInterface {
-  [key: string]: Partial<Stats>;
+  [key: string]: Stats;
 }
 
 type Stats = {
@@ -85,6 +88,14 @@ type Stats = {
     totalProfitClosedAbs: number;
     totalProfitOpenPositions: number;
     totalOpenPositions: number;
+    last24HoursProfit: number;
+    totalDrawdown: { maxDrawdownDollars: number; maxDrawdownPercent: number };
+    totalDepositWithdrawal: { totalDeposits: number; totalWithdrawals: number };
+    gainsPerMonthAbs: { [key: string]: number };
+    gainsPerMonthPct: { [key: string]: number };
+    gainsPerWeekAbs: { [key: string]: number };
+    gainsPerWeekPct: { [key: string]: number };
+    openPositionsDetails: { [key: string]: object };
   }>;
 };
 
@@ -124,12 +135,24 @@ export function mainCalculation(mainObject: MainObjectType) {
 
         // Use the calculation functions on the array of orders
 
-        STATS[key].fullAccountReport!.totalProfitClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders, 0);
+        STATS[key].fullAccountReport!.totalProfitClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders);
         STATS[key].fullAccountReport!.totalProfitOpenPositions = calcs.calculateTotalProfitOpenPositions(orders);
         STATS[key].fullAccountReport!.totalOpenPositions = calcs.numberOfOpenPositions(orders);
+        const date = new Date();
+        date.setHours(date.getHours() - 24);
+        const timestamp24hAgo = date.getTime();
+        STATS[key].fullAccountReport!.last24HoursProfit = calcs.calculateTotalProfitOnlyClosed(orders, timestamp24hAgo);
+        STATS[key].fullAccountReport!.totalDrawdown = calcs.calculateDrawdown(orders);
+        STATS[key].fullAccountReport!.totalDepositWithdrawal = calcs.calculateTotalDepositsAndWithdrawals(orders);
+        STATS[key].fullAccountReport!.gainsPerMonthAbs = calcs.calculateMonthlyGainsABS(orders);
+        // STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders); -- cant do this yet because of deposits
+        STATS[key].fullAccountReport!.gainsPerWeekAbs = calcs.calculateWeeklyGainsABS(orders);
+        // STATS[key].fullAccountReport!.gainsPerWeekPct = calcs.calculateWeeklyGainsPCT(orders);
+        STATS[key].fullAccountReport!.openPositionsDetails = calcs.findOpenOrders(orders);
       }
     }
     //console.log(STATS);
+    return STATS;
   } catch (err) {
     console.error(err);
     throw new Error(`mainCalculation()`);
@@ -137,5 +160,6 @@ export function mainCalculation(mainObject: MainObjectType) {
 }
 
 export const mainObject = readJSONFiles();
-mainCalculation(mainObject);
-console.log(STATS);
+STATS = mainCalculation(mainObject);
+//console.log(STATS);
+console.dir(STATS, { depth: null });

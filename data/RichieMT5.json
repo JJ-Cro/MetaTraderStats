@@ -1,5 +1,12 @@
 [
-  { "Platform": "MT5", "Type": "BALANCECHANGE", "Order_ID": 0, "Time": 1658093504, "Amount": 200.0, "Balance": 200.0 },
+  {
+    "Platform": "MT5",
+    "Type": "BALANCECHANGE",
+    "Order_ID": 0,
+    "Time": 1658093504,
+    "Amount": 200.0,
+    "Balance": 200.0
+  },
   {
     "Platform": "MT5",
     "Type": "ORDER",
@@ -2417,7 +2424,14 @@
     "Commission": 0.0,
     "Balance": 494.27
   },
-  { "Platform": "MT5", "Type": "BALANCECHANGE", "Order_ID": 0, "Time": 1668157883, "Amount": -494.06, "Balance": 0.21 },
+  {
+    "Platform": "MT5",
+    "Type": "BALANCECHANGE",
+    "Order_ID": 0,
+    "Time": 1668157883,
+    "Amount": -494.06,
+    "Balance": 0.21
+  },
   {
     "Platform": "MT5",
     "Type": "BALANCECHANGE",
@@ -11480,7 +11494,14 @@
     "Amount": 1000.0,
     "Balance": 8492.8
   },
-  { "Platform": "MT5", "Type": "BALANCECHANGE", "Order_ID": 0, "Time": 1669809612, "Amount": 780.8, "Balance": 9273.6 },
+  {
+    "Platform": "MT5",
+    "Type": "BALANCECHANGE",
+    "Order_ID": 0,
+    "Time": 1669809612,
+    "Amount": 780.8,
+    "Balance": 9273.6
+  },
   {
     "Platform": "MT5",
     "Type": "ORDER",
@@ -23411,7 +23432,14 @@
     "Amount": -1200.0,
     "Balance": 808.79
   },
-  { "Platform": "MT5", "Type": "BALANCECHANGE", "Order_ID": 0, "Time": 1676616145, "Amount": -808.58, "Balance": 0.21 },
+  {
+    "Platform": "MT5",
+    "Type": "BALANCECHANGE",
+    "Order_ID": 0,
+    "Time": 1676616145,
+    "Amount": -808.58,
+    "Balance": 0.21
+  },
   {
     "Platform": "MT5",
     "Type": "BALANCECHANGE",
@@ -23533,7 +23561,14 @@
     "Commission": 0.0,
     "Balance": 2418.4
   },
-  { "Platform": "MT5", "Type": "BALANCECHANGE", "Order_ID": 0, "Time": 1694192672, "Amount": 0.26, "Balance": 2418.66 },
+  {
+    "Platform": "MT5",
+    "Type": "BALANCECHANGE",
+    "Order_ID": 0,
+    "Time": 1694192672,
+    "Amount": 0.26,
+    "Balance": 2418.66
+  },
   {
     "Platform": "MT5",
     "Type": "BALANCECHANGE",
@@ -26933,10 +26968,11 @@
     "Volume": 0.01,
     "Order_Type": "ORDER_TYPE_BUY",
     "Open_Price": 0.64,
-    "Current_Price": 0.63,
-    "Profit": -6.94,
+    "Current_Price": 0.64,
+    "Profit": -6.25,
     "Swap": 0.0,
-    "Commission": 0.0
+    "Commission": 0.0,
+    "Time": 1699643761
   },
   {
     "Platform": "MT5",
@@ -26946,10 +26982,11 @@
     "Volume": 0.02,
     "Order_Type": "ORDER_TYPE_BUY",
     "Open_Price": 0.64,
-    "Current_Price": 0.63,
-    "Profit": -3.96,
+    "Current_Price": 0.64,
+    "Profit": -2.58,
     "Swap": 0.0,
-    "Commission": 0.0
+    "Commission": 0.0,
+    "Time": 1699643761
   },
   {
     "Platform": "MT5",
@@ -26959,10 +26996,11 @@
     "Volume": 0.02,
     "Order_Type": "ORDER_TYPE_BUY",
     "Open_Price": 0.64,
-    "Current_Price": 0.63,
-    "Profit": -3.02,
+    "Current_Price": 0.64,
+    "Profit": -1.64,
     "Swap": 0.0,
-    "Commission": 0.0
+    "Commission": 0.0,
+    "Time": 1699643761
   },
   {
     "Platform": "MT5",
@@ -26973,8 +27011,9 @@
     "Order_Type": "ORDER_TYPE_BUY",
     "Open_Price": 1.07,
     "Current_Price": 1.07,
-    "Profit": -2.02,
+    "Profit": -1.78,
     "Swap": 0.0,
-    "Commission": 0.0
+    "Commission": 0.0,
+    "Time": 1699643761
   }
 ]
