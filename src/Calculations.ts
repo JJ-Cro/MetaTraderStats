@@ -426,3 +426,247 @@ export function findBiggestProfitAndLoss(orders: JSONHistory): {
     throw new Error(`findBiggestProfitAndLoss()`);
   }
 }
+
+export function calculateWinLossPercentage(orders: JSONHistory): { winPercentage: number; lossPercentage: number } {
+  try {
+    let winCount = 0;
+    let lossCount = 0;
+
+    orders.forEach((order) => {
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        const total = order.Profit + order.Swap + order.Commission;
+        total > 0 ? winCount++ : lossCount++;
+      }
+    });
+
+    const totalTrades = winCount + lossCount;
+    const winPercentage = (winCount / totalTrades) * 100;
+    const lossPercentage = (lossCount / totalTrades) * 100;
+
+    return {
+      winPercentage: Number(winPercentage.toFixed(2)),
+      lossPercentage: Number(lossPercentage.toFixed(2)),
+    };
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateWinLossPercentage()`);
+  }
+}
+
+export function getPerformanceTable(orders: JSONHistory): {
+  balance: number;
+  equity: number;
+  totalProfit: number;
+  initialBalance: number;
+  totalWithdrawalDeposit: { totalDeposits: number; totalWithdrawals: number };
+  profitFactor: number;
+} {
+  try {
+    let balance = 0;
+    let unrealisedProfit = 0;
+    let initialBalance = 0;
+    let firstOrderFound = false;
+    let totalProfit = 0;
+    let totalLoss = 0;
+
+    orders.forEach((order) => {
+      if (!firstOrderFound) {
+        if (
+          order.Platform === 'MT4' &&
+          (order.Transaction_Type === 'DEPOSIT' || order.Transaction_Type === 'WITHDRAWAL')
+        ) {
+          initialBalance += order.Profit;
+        } else if (order.Platform === 'MT5' && order.Type === 'BALANCECHANGE') {
+          initialBalance += order.Amount;
+        } else if (
+          (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+          (order.Platform === 'MT5' && order.Type === 'ORDER')
+        ) {
+          firstOrderFound = true;
+        }
+      }
+
+      if ('Balance' in order) {
+        balance = order.Balance;
+      }
+
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'OPEN_ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'OPEN_ORDER')
+      ) {
+        unrealisedProfit += order.Profit + order.Swap + order.Commission;
+      }
+
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        const total = order.Profit + order.Swap + order.Commission;
+        if (total > 0) {
+          totalProfit += total;
+        } else {
+          totalLoss += total;
+        }
+      }
+    });
+
+    const equity = Number((balance + unrealisedProfit).toFixed(2));
+    const totalWithdrawalDeposit = calculateTotalDepositsAndWithdrawals(orders);
+    const profitFactor = +Math.abs(totalProfit / totalLoss).toFixed(2);
+
+    return {
+      balance,
+      equity,
+      totalProfit: +totalProfit.toFixed(2),
+      initialBalance,
+      totalWithdrawalDeposit,
+      profitFactor,
+    };
+  } catch (err) {
+    console.error(err);
+    throw new Error(`getPerformanceTable()`);
+  }
+}
+
+export function calculateAverageWinLoss(orders: JSONHistory): {
+  averageWin: number;
+  averageLoss: number;
+  totalProfit: number;
+  totalLosses: number;
+  averageWinReturnPct: number;
+  averageLossReturnPct: number;
+} {
+  try {
+    let winCount = 0;
+    let lossCount = 0;
+    let totalProfit = 0;
+    let totalLosses = 0;
+    let winPercentages: number[] = [];
+    let lossPercentages: number[] = [];
+    let previousBalance = 0;
+
+    orders.forEach((order) => {
+      if ('Balance' in order) {
+        previousBalance = order.Balance;
+      }
+
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        const total = order.Profit + order.Swap + order.Commission;
+        const percentage = (total / previousBalance) * 100;
+
+        if (total > 0) {
+          winCount++;
+          totalProfit += total;
+          winPercentages.push(percentage);
+        } else {
+          lossCount++;
+          totalLosses += total;
+          lossPercentages.push(percentage);
+        }
+      }
+    });
+
+    const averageWin = totalProfit / winCount;
+    const averageLoss = totalLosses / lossCount;
+    const averageWinPercentage = winPercentages.reduce((a, b) => a + b, 0) / winPercentages.length;
+    const averageLossPercentage = lossPercentages.reduce((a, b) => a + b, 0) / lossPercentages.length;
+
+    return {
+      averageWin: Number(averageWin.toFixed(2)),
+      averageLoss: Number(averageLoss.toFixed(2)),
+      totalProfit: Number(totalProfit.toFixed(2)),
+      totalLosses: Number(totalLosses.toFixed(2)),
+      averageWinReturnPct: Number(averageWinPercentage.toFixed(2)),
+      averageLossReturnPct: Number(averageLossPercentage.toFixed(2)),
+    };
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateAverageWinLoss()`);
+  }
+}
+
+export function calculateProfitAndTradesPerSymbol(orders: JSONHistory): {
+  [symbol: string]: { totalProfit: number; tradeCount: number; winCount: number; lossCount: number };
+} {
+  try {
+    const symbolStats: {
+      [symbol: string]: { totalProfit: number; tradeCount: number; winCount: number; lossCount: number };
+    } = {};
+
+    orders.forEach((order) => {
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        const total = order.Profit + order.Swap + order.Commission;
+        const symbol = order.Symbol;
+
+        if (!(symbol in symbolStats)) {
+          symbolStats[symbol] = { totalProfit: 0, tradeCount: 0, winCount: 0, lossCount: 0 };
+        }
+
+        symbolStats[symbol].totalProfit += total;
+        symbolStats[symbol].tradeCount++;
+
+        if (total > 0) {
+          symbolStats[symbol].winCount++;
+        } else {
+          symbolStats[symbol].lossCount++;
+        }
+      }
+    });
+    for (const symbol in symbolStats) {
+      symbolStats[symbol].totalProfit = Number(symbolStats[symbol].totalProfit.toFixed(2));
+    }
+
+    return symbolStats;
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateProfitAndTradesPerSymbol()`);
+  }
+}
+
+export function calculateBuySellPercentage(orders: JSONHistory): {
+  buyCount: number;
+  sellCount: number;
+  buyPercentage: number;
+  sellPercentage: number;
+} {
+  try {
+    let buyCount = 0;
+    let sellCount = 0;
+
+    orders.forEach((order) => {
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        if (order.Order_Type === 'BUY' || order.Order_Type === 'ORDER_TYPE_BUY') {
+          buyCount++;
+        } else if (order.Order_Type === 'SELL' || order.Order_Type === 'ORDER_TYPE_SELL') {
+          sellCount++;
+        }
+      }
+    });
+
+    const totalOrders = buyCount + sellCount;
+    const buyPercentage = (buyCount / totalOrders) * 100;
+    const sellPercentage = (sellCount / totalOrders) * 100;
+
+    return {
+      buyCount,
+      sellCount,
+      buyPercentage: Number(buyPercentage.toFixed(2)),
+      sellPercentage: Number(sellPercentage.toFixed(2)),
+    };
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateBuySellPercentage()`);
+  }
+}

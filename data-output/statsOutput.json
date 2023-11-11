@@ -1,0 +1,549 @@
+{
+  "RichieMT4": {
+    "resultsStart": "2023-05-01",
+    "performanceTable": {
+      "balance": 1373.3,
+      "equity": 1364.94,
+      "totalProfit": 2550.729999999964,
+      "initialBalance": 1000,
+      "totalWithdrawalDeposit": {
+        "totalDeposits": 2000,
+        "totalWithdrawals": 0
+      },
+      "profitFactor": 0.8
+    },
+    "fullAccountReport": {
+      "totalRealisedPNLClosedAbs": -626.7,
+      "totalProfitOpenPositions": -8.36,
+      "totalOpenPositions": 7,
+      "last24HoursProfit": 0.33,
+      "totalWinRate": {
+        "winPercentage": 78.25,
+        "lossPercentage": 21.75
+      },
+      "longShortRatio": {
+        "buyCount": 1326,
+        "sellCount": 858,
+        "buyPercentage": 60.71,
+        "sellPercentage": 39.29
+      },
+      "totalDrawdown": {
+        "maxDrawdownDollars": 1607.48,
+        "maxDrawdownPercent": 7.56
+      },
+      "Averages": {
+        "averageWin": 1.49,
+        "averageLoss": -6.69,
+        "totalProfit": 2550.73,
+        "totalLosses": -3177.43,
+        "averageWinReturnPct": 0.26,
+        "averageLossReturnPct": -1.21
+      },
+      "gainsPerMonthAbs": {
+        "May23": 76.61,
+        "June23": 233.17,
+        "July23": 256.08,
+        "August23": -1456.49,
+        "September23": 62.6,
+        "October23": 160.48,
+        "November23": 40.85
+      },
+      "gainsPerMonthPct": {
+        "May23": 7.66,
+        "June23": 21.65,
+        "July23": 19.54,
+        "August23": -95.09,
+        "September23": 5.64,
+        "October23": 14.08,
+        "November23": 3.06
+      },
+      "gainsPerWeekAbs": {
+        "Week18-23": -29.97,
+        "Week19-23": 57.54,
+        "Week20-23": 30.94,
+        "Week21-23": -7.07,
+        "Week22-23": 51.06,
+        "Week23-23": 52.37,
+        "Week24-23": 44.31,
+        "Week25-23": 78.45,
+        "Week26-23": 32.15,
+        "Week27-23": 45.75,
+        "Week28-23": 26.06,
+        "Week29-23": 42.16,
+        "Week30-23": 183.14,
+        "Week31-23": -1604.83,
+        "Week32-23": -37.83,
+        "Week33-23": 91.77,
+        "Week34-23": 37.99,
+        "Week35-23": 3.9,
+        "Week36-23": 37.68,
+        "Week37-23": 20.29,
+        "Week38-23": 22.64,
+        "Week39-23": -6.53,
+        "Week40-23": 82.21,
+        "Week41-23": 22.51,
+        "Week42-23": 21.66,
+        "Week43-23": 23.45,
+        "Week44-23": -25.56,
+        "Week45-23": 77.06
+      },
+      "gainsPerWeekPct": {
+        "Week18-23": -3,
+        "Week19-23": 5.92,
+        "Week20-23": 3.05,
+        "Week21-23": -0.71,
+        "Week22-23": 4.85,
+        "Week23-23": 4.74,
+        "Week24-23": 3.84,
+        "Week25-23": 6.54,
+        "Week26-23": 2.52,
+        "Week27-23": 3.49,
+        "Week28-23": 1.92,
+        "Week29-23": 3.07,
+        "Week30-23": 12.83,
+        "Week31-23": -100.21,
+        "Week32-23": -3.78,
+        "Week33-23": 9.51,
+        "Week34-23": 3.6,
+        "Week35-23": 0.36,
+        "Week36-23": 3.43,
+        "Week37-23": 1.79,
+        "Week38-23": 1.96,
+        "Week39-23": -0.55,
+        "Week40-23": 7.21,
+        "Week41-23": 1.79,
+        "Week42-23": 1.7,
+        "Week43-23": 1.81,
+        "Week44-23": -1.93,
+        "Week45-23": 5.94
+      },
+      "WinLossStreaks": {
+        "longestWinningStreak": 25,
+        "winningStreakAmount": 9.1,
+        "longestLosingStreak": 5,
+        "losingStreakAmount": -63.1
+      },
+      "BiggestWinLoss": {
+        "biggestProfitAbs": 183.54,
+        "biggestProfitPct": 12.92,
+        "biggestLossAbs": -353.76,
+        "biggestLossPct": -72.54
+      },
+      "perSymbolStatistics": {
+        "EURUSD": {
+          "totalProfit": 341.65,
+          "tradeCount": 812,
+          "winCount": 669,
+          "lossCount": 143
+        },
+        "AUDUSD": {
+          "totalProfit": -863.44,
+          "tradeCount": 1360,
+          "winCount": 1036,
+          "lossCount": 324
+        },
+        "GBPCAD": {
+          "totalProfit": -89.91,
+          "tradeCount": 8,
+          "winCount": 3,
+          "lossCount": 5
+        },
+        "EURSGD": {
+          "totalProfit": -15,
+          "tradeCount": 4,
+          "winCount": 1,
+          "lossCount": 3
+        }
+      },
+      "openPositionsDetails": {
+        "Order_2186": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "BUY",
+          "Order_ID": 533270582,
+          "Symbol": "AUDUSD",
+          "Volume": 0.01,
+          "Time": 1699560001,
+          "Order_Type": "BUY",
+          "Open_Price": 0.64125,
+          "Current_Price": 0.63576,
+          "Profit": -5.49,
+          "Swap": -0.03,
+          "Commission": -0.07,
+          "Comment": "www.fxcore100.com *N0",
+          "Magic": 658478
+        },
+        "Order_2187": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "BUY",
+          "Order_ID": 533308676,
+          "Symbol": "AUDUSD",
+          "Volume": 0.02,
+          "Time": 1699588801,
+          "Order_Type": "BUY",
+          "Open_Price": 0.6363,
+          "Current_Price": 0.63576,
+          "Profit": -1.08,
+          "Swap": 0,
+          "Commission": -0.14,
+          "Comment": "www.fxcore100.com *N1",
+          "Magic": 658478
+        },
+        "Order_2188": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "BUY",
+          "Order_ID": 533318397,
+          "Symbol": "AUDUSD",
+          "Volume": 0.02,
+          "Time": 1699603204,
+          "Order_Type": "BUY",
+          "Open_Price": 0.63583,
+          "Current_Price": 0.63576,
+          "Profit": -0.14,
+          "Swap": 0,
+          "Commission": -0.14,
+          "Comment": "www.fxcore100.com *N2",
+          "Magic": 658478
+        },
+        "Order_2189": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "BUY",
+          "Order_ID": 533367400,
+          "Symbol": "EURUSD",
+          "Volume": 0.01,
+          "Time": 1699632000,
+          "Order_Type": "BUY",
+          "Open_Price": 1.06892,
+          "Current_Price": 1.06799,
+          "Profit": -0.94,
+          "Swap": 0,
+          "Commission": -0.07,
+          "Comment": "www.fxcore100.com *N0",
+          "Magic": 658478
+        },
+        "Order_2190": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "BUY",
+          "Order_ID": 533401351,
+          "Symbol": "EURUSD",
+          "Volume": 0.01,
+          "Time": 1699646400,
+          "Order_Type": "BUY",
+          "Open_Price": 1.06794,
+          "Current_Price": 1.06799,
+          "Profit": 0.04,
+          "Swap": 0,
+          "Commission": -0.07,
+          "Comment": "www.fxcore100.com *N1",
+          "Magic": 658478
+        },
+        "Order_2191": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "SELL",
+          "Order_ID": 533401355,
+          "Symbol": "EURUSD",
+          "Volume": 0.01,
+          "Time": 1699646400,
+          "Order_Type": "SELL",
+          "Open_Price": 1.06794,
+          "Current_Price": 1.06799,
+          "Profit": -0.05,
+          "Swap": 0,
+          "Commission": -0.07,
+          "Comment": "www.fxcore100.com *N0",
+          "Magic": 852369
+        },
+        "Order_2192": {
+          "Platform": "MT4",
+          "Transaction_Type": "OPEN_ORDER",
+          "Type": "SELL",
+          "Order_ID": 533401410,
+          "Symbol": "AUDUSD",
+          "Volume": 0.01,
+          "Time": 1699646400,
+          "Order_Type": "SELL",
+          "Open_Price": 0.63572,
+          "Current_Price": 0.63576,
+          "Profit": -0.04,
+          "Swap": 0,
+          "Commission": -0.07,
+          "Comment": "www.fxcore100.com *N0",
+          "Magic": 852369
+        }
+      }
+    }
+  },
+  "RichieMT5": {
+    "resultsStart": "2022-07-17",
+    "performanceTable": {
+      "balance": 1305.51,
+      "equity": 1293.26,
+      "totalProfit": 21893.899999999998,
+      "initialBalance": 200,
+      "totalWithdrawalDeposit": {
+        "totalDeposits": 86511.86,
+        "totalWithdrawals": -86711.85
+      },
+      "profitFactor": 1.07
+    },
+    "fullAccountReport": {
+      "totalRealisedPNLClosedAbs": 1505.5,
+      "totalProfitOpenPositions": -12.25,
+      "totalOpenPositions": 4,
+      "last24HoursProfit": 0.67,
+      "totalWinRate": {
+        "winPercentage": 30.9,
+        "lossPercentage": 69.1
+      },
+      "longShortRatio": {
+        "buyCount": 831,
+        "sellCount": 823,
+        "buyPercentage": 50.24,
+        "sellPercentage": 49.76
+      },
+      "totalDrawdown": {
+        "maxDrawdownDollars": 53391.08,
+        "maxDrawdownPercent": 3.86
+      },
+      "Averages": {
+        "averageWin": 40.47,
+        "averageLoss": -16.85,
+        "totalProfit": 21893.9,
+        "totalLosses": -20388.4,
+        "averageWinReturnPct": 1.27,
+        "averageLossReturnPct": -0.79
+      },
+      "gainsPerMonthAbs": {
+        "July22": -27.55,
+        "September22": -0.07,
+        "October22": 50.63,
+        "November22": 1932.19,
+        "December22": 745.07,
+        "January23": 0.14,
+        "August23": 492.3,
+        "September23": 462.89,
+        "October23": -2189.38,
+        "November23": 39.28
+      },
+      "gainsPerMonthPct": {
+        "July22": -13.78,
+        "September22": -0.04,
+        "October22": 25.64,
+        "November22": 411.64,
+        "December22": 49.84,
+        "January23": 0.01,
+        "August23": 19.72,
+        "September23": 15.49,
+        "October23": -63.36,
+        "November23": 3.1
+      },
+      "gainsPerWeekAbs": {
+        "Week30-22": -13.48,
+        "Week31-22": -14.07,
+        "Week40-22": -0.07,
+        "Week41-22": 25.09,
+        "Week43-22": -0.07,
+        "Week44-22": 25.61,
+        "Week45-22": 24.81,
+        "Week48-22": 3080.49,
+        "Week49-22": -739.78,
+        "Week51-22": -741.38,
+        "Week52-22": 1053.12,
+        "Week1-23": 0.14,
+        "Week34-23": -3.15,
+        "Week35-23": 491.74,
+        "Week36-23": -570.4,
+        "Week37-23": -495.75,
+        "Week38-23": 926.55,
+        "Week39-23": 606.2,
+        "Week40-23": -918.37,
+        "Week41-23": -111.97,
+        "Week42-23": -427.09,
+        "Week43-23": 275.75,
+        "Week44-23": -1001.53,
+        "Week45-23": 33.11
+      },
+      "gainsPerWeekPct": {
+        "Week30-22": -6.74,
+        "Week31-22": -7.55,
+        "Week40-22": -0.04,
+        "Week41-22": 12.71,
+        "Week43-22": -0.04,
+        "Week44-22": 5.46,
+        "Week45-22": 5.29,
+        "Week48-22": 308.01,
+        "Week49-22": -46.69,
+        "Week51-22": -43.71,
+        "Week52-22": 72.39,
+        "Week1-23": 0.01,
+        "Week34-23": -0.13,
+        "Week35-23": 16.43,
+        "Week36-23": -23.74,
+        "Week37-23": -20.51,
+        "Week38-23": 44.47,
+        "Week39-23": 21.29,
+        "Week40-23": -26.58,
+        "Week41-23": -4.42,
+        "Week42-23": -17.63,
+        "Week43-23": 13.81,
+        "Week44-23": -44.08,
+        "Week45-23": 2.6
+      },
+      "WinLossStreaks": {
+        "longestWinningStreak": 4,
+        "winningStreakAmount": 4.78,
+        "longestLosingStreak": 17,
+        "losingStreakAmount": -6.35
+      },
+      "BiggestWinLoss": {
+        "biggestProfitAbs": 2930.8,
+        "biggestProfitPct": 6.01,
+        "biggestLossAbs": -1638.8,
+        "biggestLossPct": -3.1
+      },
+      "perSymbolStatistics": {
+        "EURUSD.e": {
+          "totalProfit": 16.27,
+          "tradeCount": 99,
+          "winCount": 38,
+          "lossCount": 61
+        },
+        "AUDUSD.e": {
+          "totalProfit": 14.84,
+          "tradeCount": 85,
+          "winCount": 32,
+          "lossCount": 53
+        },
+        "CHFJPY.e": {
+          "totalProfit": 0.16,
+          "tradeCount": 12,
+          "winCount": 4,
+          "lossCount": 8
+        },
+        "USDJPY.e": {
+          "totalProfit": -9.11,
+          "tradeCount": 10,
+          "winCount": 1,
+          "lossCount": 9
+        },
+        "EURAUD.e": {
+          "totalProfit": -0.53,
+          "tradeCount": 17,
+          "winCount": 4,
+          "lossCount": 13
+        },
+        "EURCAD.e": {
+          "totalProfit": 0.12,
+          "tradeCount": 10,
+          "winCount": 2,
+          "lossCount": 8
+        },
+        "USDCAD.e": {
+          "totalProfit": -1.37,
+          "tradeCount": 15,
+          "winCount": 4,
+          "lossCount": 11
+        },
+        "GBPUSD.e": {
+          "totalProfit": -6.32,
+          "tradeCount": 14,
+          "winCount": 1,
+          "lossCount": 13
+        },
+        "EURGBP.e": {
+          "totalProfit": -1.05,
+          "tradeCount": 8,
+          "winCount": 1,
+          "lossCount": 7
+        },
+        "EURCHF.e": {
+          "totalProfit": -2.39,
+          "tradeCount": 8,
+          "winCount": 1,
+          "lossCount": 7
+        },
+        "XAUUSD.e": {
+          "totalProfit": 1609.06,
+          "tradeCount": 1463,
+          "winCount": 453,
+          "lossCount": 1010
+        },
+        "USJZ.e": {
+          "totalProfit": -114.11,
+          "tradeCount": 8,
+          "winCount": 0,
+          "lossCount": 8
+        },
+        "NIKZ.e": {
+          "totalProfit": -0.07,
+          "tradeCount": 2,
+          "winCount": 0,
+          "lossCount": 2
+        }
+      },
+      "openPositionsDetails": {
+        "Order_1838": {
+          "Platform": "MT5",
+          "Type": "OPEN_ORDER",
+          "Order_ID": 1473016586,
+          "Symbol": "AUDUSD.e",
+          "Volume": 0.01,
+          "Order_Type": "ORDER_TYPE_BUY",
+          "Open_Price": 0.64,
+          "Current_Price": 0.64,
+          "Profit": -6.25,
+          "Swap": 0,
+          "Commission": 0,
+          "Time": 1699643761
+        },
+        "Order_1839": {
+          "Platform": "MT5",
+          "Type": "OPEN_ORDER",
+          "Order_ID": 1473026517,
+          "Symbol": "AUDUSD.e",
+          "Volume": 0.02,
+          "Order_Type": "ORDER_TYPE_BUY",
+          "Open_Price": 0.64,
+          "Current_Price": 0.64,
+          "Profit": -2.58,
+          "Swap": 0,
+          "Commission": 0,
+          "Time": 1699643761
+        },
+        "Order_1840": {
+          "Platform": "MT5",
+          "Type": "OPEN_ORDER",
+          "Order_ID": 1473032745,
+          "Symbol": "AUDUSD.e",
+          "Volume": 0.02,
+          "Order_Type": "ORDER_TYPE_BUY",
+          "Open_Price": 0.64,
+          "Current_Price": 0.64,
+          "Profit": -1.64,
+          "Swap": 0,
+          "Commission": 0,
+          "Time": 1699643761
+        },
+        "Order_1841": {
+          "Platform": "MT5",
+          "Type": "OPEN_ORDER",
+          "Order_ID": 1473055661,
+          "Symbol": "EURUSD.e",
+          "Volume": 0.01,
+          "Order_Type": "ORDER_TYPE_BUY",
+          "Open_Price": 1.07,
+          "Current_Price": 1.07,
+          "Profit": -1.78,
+          "Swap": 0,
+          "Commission": 0,
+          "Time": 1699643761
+        }
+      }
+    }
+  }
+}

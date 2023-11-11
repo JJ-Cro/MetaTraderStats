@@ -11,6 +11,7 @@
 /* things to do: 
 fix the array at the end of JSON files 
 drawdown data, and performance matrix here yet
+fix all % calculations 
  */
 
 import fs from 'fs';
@@ -85,13 +86,30 @@ export interface StatsInterface {
 
 type Stats = {
   resultsStart: string;
+  performanceTable: Partial<{
+    balance: number;
+    equity: number;
+    totalProfit: number;
+    initialBalance: number;
+    totalWithdrawalDeposit: { totalDeposits: number; totalWithdrawals: number };
+    profitFactor: number;
+  }>;
   fullAccountReport: Partial<{
-    totalProfitClosedAbs: number;
+    totalRealisedPNLClosedAbs: number;
     totalProfitOpenPositions: number;
     totalOpenPositions: number;
     last24HoursProfit: number;
+    totalWinRate: { winPercentage: number; lossPercentage: number };
+    longShortRatio: { buyCount: number; sellCount: number; buyPercentage: number; sellPercentage: number };
     totalDrawdown: { maxDrawdownDollars: number; maxDrawdownPercent: number };
-    totalDepositWithdrawal: { totalDeposits: number; totalWithdrawals: number };
+    Averages: {
+      averageWin: number;
+      averageLoss: number;
+      totalProfit: number;
+      totalLosses: number;
+      averageWinReturnPct: number;
+      averageLossReturnPct: number;
+    };
     gainsPerMonthAbs: { [key: string]: number };
     gainsPerMonthPct: { [key: string]: number };
     gainsPerWeekAbs: { [key: string]: number };
@@ -108,11 +126,26 @@ type Stats = {
       biggestLossAbs: number;
       biggestLossPct: number;
     };
+    perSymbolStatistics: {
+      [symbol: string]: { totalProfit: number; tradeCount: number; winCount: number; lossCount: number };
+    };
     openPositionsDetails: { [key: string]: object };
   }>;
 };
 
 let STATS: StatsInterface = {};
+
+export function writeStatsToFile(stats: StatsInterface): void {
+  try {
+    const dataDirectory = path.join(__dirname, '../data-output');
+    const filePath = path.join(dataDirectory, 'statsOutput.json');
+    const data = JSON.stringify(stats, null, 2);
+    fs.writeFileSync(filePath, data);
+  } catch (err) {
+    console.error(err);
+    throw new Error(`writeStatsToFile()`);
+  }
+}
 
 export function readJSONFiles(): MainObjectType {
   try {
@@ -127,7 +160,7 @@ export function readJSONFiles(): MainObjectType {
       const fileNameWithoutExtension = path.basename(file, '.json');
       files[fileNameWithoutExtension] = JSON.parse(rawData);
 
-      STATS[fileNameWithoutExtension] = { resultsStart: '', fullAccountReport: {} };
+      STATS[fileNameWithoutExtension] = { resultsStart: '', performanceTable: {}, fullAccountReport: {} };
     });
 
     console.log(Object.keys(files));
@@ -148,21 +181,25 @@ export function mainCalculation(mainObject: MainObjectType) {
 
         // Use the calculation functions on the array of orders
         STATS[key].resultsStart = calcs.findEarliestEvent(orders);
-        STATS[key].fullAccountReport!.totalProfitClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders);
+        STATS[key].performanceTable = calcs.getPerformanceTable(orders);
+        STATS[key].fullAccountReport!.totalRealisedPNLClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders);
         STATS[key].fullAccountReport!.totalProfitOpenPositions = calcs.calculateTotalProfitOpenPositions(orders);
         STATS[key].fullAccountReport!.totalOpenPositions = calcs.numberOfOpenPositions(orders);
         const date = new Date();
         date.setHours(date.getHours() - 24);
         const timestamp24hAgo = date.getTime();
         STATS[key].fullAccountReport!.last24HoursProfit = calcs.calculateTotalProfitOnlyClosed(orders, timestamp24hAgo);
+        STATS[key].fullAccountReport!.totalWinRate = calcs.calculateWinLossPercentage(orders);
+        STATS[key].fullAccountReport!.longShortRatio = calcs.calculateBuySellPercentage(orders);
         STATS[key].fullAccountReport!.totalDrawdown = calcs.calculateDrawdown(orders);
-        STATS[key].fullAccountReport!.totalDepositWithdrawal = calcs.calculateTotalDepositsAndWithdrawals(orders);
+        STATS[key].fullAccountReport!.Averages = calcs.calculateAverageWinLoss(orders);
         STATS[key].fullAccountReport!.gainsPerMonthAbs = calcs.calculateMonthlyGainsABS(orders);
-        // STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders); -- cant do this yet because of deposits
+        STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders);
         STATS[key].fullAccountReport!.gainsPerWeekAbs = calcs.calculateWeeklyGainsABS(orders);
-        // STATS[key].fullAccountReport!.gainsPerWeekPct = calcs.calculateWeeklyGainsPCT(orders);
+        STATS[key].fullAccountReport!.gainsPerWeekPct = calcs.calculateWeeklyGainsPCT(orders);
         STATS[key].fullAccountReport!.WinLossStreaks = calcs.findLongestStreaks(orders);
         STATS[key].fullAccountReport!.BiggestWinLoss = calcs.findBiggestProfitAndLoss(orders);
+        STATS[key].fullAccountReport!.perSymbolStatistics = calcs.calculateProfitAndTradesPerSymbol(orders);
         STATS[key].fullAccountReport!.openPositionsDetails = calcs.findOpenOrders(orders);
       }
     }
@@ -178,3 +215,4 @@ export const mainObject = readJSONFiles();
 STATS = mainCalculation(mainObject);
 //console.log(STATS);
 console.dir(STATS, { depth: null });
+writeStatsToFile(STATS);
