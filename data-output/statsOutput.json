@@ -4,7 +4,7 @@
     "performanceTable": {
       "balance": 1373.3,
       "equity": 1364.94,
-      "totalProfit": 2550.729999999964,
+      "totalProfit": 2550.73,
       "initialBalance": 1000,
       "totalWithdrawalDeposit": {
         "totalDeposits": 2000,
@@ -283,7 +283,7 @@
     "performanceTable": {
       "balance": 1305.51,
       "equity": 1293.26,
-      "totalProfit": 21893.899999999998,
+      "totalProfit": 21893.9,
       "initialBalance": 200,
       "totalWithdrawalDeposit": {
         "totalDeposits": 86511.86,
