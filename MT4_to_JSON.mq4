@@ -53,6 +53,9 @@ void ExportTradingHistory()
       int orders_total = OrdersHistoryTotal();
       double balance = 0; // Initial balance
 
+      // Check if there are any open orders
+      int open_orders_total = OrdersTotal();
+
       for(int i = 0; i < orders_total; i++)
       {
          if(OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
@@ -91,11 +94,15 @@ void ExportTradingHistory()
 
             // Write order as JSON object
             string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Close_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, close_time, type, price_open, price_current, profit, swap, commission, balance, comment, magic);
-            FileWrite(handle, json + ",");
+            
+            // Check if it's the last order and if there are any open orders
+            if(i < orders_total - 1 || open_orders_total > 0) {
+                FileWrite(handle, json + ",");
+            } else {
+                FileWrite(handle, json);
+            }
          }
       }
-
-      
 
       FileClose(handle);
    }
@@ -143,11 +150,16 @@ void ExportOpenPositions()
 
             // Write order as JSON object
             string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, type, price_open, price_current, profit, swap, commission, comment, magic);
-            FileWrite(handle, json + ",");
+            // Check if it's the last order
+            if(i < open_orders_total - 1) {
+                FileWrite(handle, json + ",");
+            } else {
+                FileWrite(handle, json);
+            }
          }
       }
       // Write end of JSON array
-      FileWrite(handle, "\n]");
+      FileWrite(handle, "]");
       FileClose(handle);
    }
    else

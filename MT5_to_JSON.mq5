@@ -59,7 +59,7 @@ void ExportTradingHistory()
       HistorySelect(0, TimeCurrent());
       int deals_total = HistoryDealsTotal();
       double balance = 0; // Initial balance
-
+int totalPositions = PositionsTotal();
       // Export orders and balance changes
       int orders_total = HistoryOrdersTotal();
       int order_index = 0;
@@ -109,7 +109,11 @@ void ExportTradingHistory()
             
             // Write order as JSON object
             string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
+            if(order_index < orders_total - 1 || totalPositions > 0) {
             FileWrite(handle, json + ",");
+         } else {
+            FileWrite(handle, json);
+         }
             order_index++;
          }
          else if(deal_ticket > 0)
@@ -124,7 +128,11 @@ void ExportTradingHistory()
 
                // Write balance change as JSON object
                string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"BALANCECHANGE\",\"Order_ID\":%d,\"Time\":%d,\"Amount\":%.2f,\"Balance\":%.2f}", order_ticket_for_deal, deal_time, amount, balance);
-               FileWrite(handle, json + ",");
+               if(order_index < orders_total - 1 || totalPositions > 0) {
+            FileWrite(handle, json + ",");
+         } else {
+            FileWrite(handle, json);
+         }
             }
             deal_index++;
          }
@@ -165,7 +173,11 @@ void ExportOpenPositions()
             
             // Write open order as JSON object
             string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
+            if(i < total - 1) {
             FileWrite(handle, json + ",");
+         } else {
+            FileWrite(handle, json);
+         }
          }
       }
       FileWrite(handle, "\n]");
