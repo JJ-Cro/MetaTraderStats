@@ -10,7 +10,7 @@
 
 /* things to do: 
 fix the array at the end of JSON files 
-add total deposits and withdrawals
+drawdown data, and performance matrix here yet
  */
 
 import fs from 'fs';
@@ -84,6 +84,7 @@ export interface StatsInterface {
 }
 
 type Stats = {
+  resultsStart: string;
   fullAccountReport: Partial<{
     totalProfitClosedAbs: number;
     totalProfitOpenPositions: number;
@@ -95,6 +96,18 @@ type Stats = {
     gainsPerMonthPct: { [key: string]: number };
     gainsPerWeekAbs: { [key: string]: number };
     gainsPerWeekPct: { [key: string]: number };
+    WinLossStreaks: {
+      longestWinningStreak: number;
+      longestLosingStreak: number;
+      winningStreakAmount: number;
+      losingStreakAmount: number;
+    };
+    BiggestWinLoss: {
+      biggestProfitAbs: number;
+      biggestProfitPct: number;
+      biggestLossAbs: number;
+      biggestLossPct: number;
+    };
     openPositionsDetails: { [key: string]: object };
   }>;
 };
@@ -114,7 +127,7 @@ export function readJSONFiles(): MainObjectType {
       const fileNameWithoutExtension = path.basename(file, '.json');
       files[fileNameWithoutExtension] = JSON.parse(rawData);
 
-      STATS[fileNameWithoutExtension] = { fullAccountReport: {} };
+      STATS[fileNameWithoutExtension] = { resultsStart: '', fullAccountReport: {} };
     });
 
     console.log(Object.keys(files));
@@ -134,7 +147,7 @@ export function mainCalculation(mainObject: MainObjectType) {
         const orders: JSONHistory = mainObject[key];
 
         // Use the calculation functions on the array of orders
-
+        STATS[key].resultsStart = calcs.findEarliestEvent(orders);
         STATS[key].fullAccountReport!.totalProfitClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders);
         STATS[key].fullAccountReport!.totalProfitOpenPositions = calcs.calculateTotalProfitOpenPositions(orders);
         STATS[key].fullAccountReport!.totalOpenPositions = calcs.numberOfOpenPositions(orders);
@@ -148,6 +161,8 @@ export function mainCalculation(mainObject: MainObjectType) {
         // STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders); -- cant do this yet because of deposits
         STATS[key].fullAccountReport!.gainsPerWeekAbs = calcs.calculateWeeklyGainsABS(orders);
         // STATS[key].fullAccountReport!.gainsPerWeekPct = calcs.calculateWeeklyGainsPCT(orders);
+        STATS[key].fullAccountReport!.WinLossStreaks = calcs.findLongestStreaks(orders);
+        STATS[key].fullAccountReport!.BiggestWinLoss = calcs.findBiggestProfitAndLoss(orders);
         STATS[key].fullAccountReport!.openPositionsDetails = calcs.findOpenOrders(orders);
       }
     }
