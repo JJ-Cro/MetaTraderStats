@@ -9,7 +9,8 @@
 9. Ability to input the start date (for example: my account is opened from 2010, but i only want to get results start from 5 October 2021 till now) */
 
 /* things to do: 
-fix the array at the end of JSON files 
+fix output path for files - make the script to copy all to same directory
+add timestamp for custom date - I would do it in JS
 drawdown data, and performance matrix here yet
 fix all % calculations 
  */
@@ -135,6 +136,25 @@ type Stats = {
 
 let STATS: StatsInterface = {};
 
+// Recursive function to scan directories
+const sourceDir = 'C:\\Users\\Jerko\\AppData\\Roaming\\MetaQuotes\\Terminal'; // Replace with your source directory
+const targetDir = 'C:\\MTJsonData'; // Replace with your target directory
+
+function scanDir(dir: string) {
+  let counter = 0;
+  fs.readdirSync(dir).forEach((file) => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat.isDirectory()) {
+      scanDir(filePath); // Recurse into subdirectories
+    } else if (path.extname(file) === '.json') {
+      const targetPath = path.join(targetDir, file);
+      fs.copyFileSync(filePath, targetPath); // Copy JSON file
+      counter += 1;
+    }
+  });
+}
+
 export function writeStatsToFile(stats: StatsInterface): void {
   try {
     const dataDirectory = path.join(__dirname, '../data-output');
@@ -149,7 +169,7 @@ export function writeStatsToFile(stats: StatsInterface): void {
 
 export function readJSONFiles(): MainObjectType {
   try {
-    const dataDirectory = path.join(__dirname, '../data');
+    const dataDirectory = targetDir;
     const fileNames = fs.readdirSync(dataDirectory);
     const jsonFiles = fileNames.filter((file) => path.extname(file) === '.json');
 
@@ -211,8 +231,17 @@ export function mainCalculation(mainObject: MainObjectType) {
   }
 }
 
-export const mainObject = readJSONFiles();
+// MAIN EXECUTION
+//setInterval(() => {
+const mainObject = readJSONFiles();
 STATS = mainCalculation(mainObject);
 //console.log(STATS);
 console.dir(STATS, { depth: null });
 writeStatsToFile(STATS);
+//}, 60000);
+
+setInterval(() => {
+  scanDir(sourceDir);
+}, 10000);
+
+
