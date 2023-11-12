@@ -11,7 +11,9 @@ config.json
 built/
 consolelogs.txt
 errorLogs.txt
-
+.txt
+data/
+data-output/
 
 
 

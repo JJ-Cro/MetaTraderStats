@@ -28,7 +28,7 @@ void OnDeinit(const int reason)
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 input string FileName = "TradingHistory.json"; // Input variable for the file name
-
+input string StartDate = "2020.01.01"; // Input variable for the date
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
@@ -49,6 +49,7 @@ void OnTick()
 
 void ExportTradingHistory()
 {
+   datetime filterDate = StringToTime(StartDate);
    int handle = FileOpen(FileName, FILE_WRITE|FILE_TXT|FILE_ANSI);
    if(handle != INVALID_HANDLE)
    {
@@ -56,10 +57,10 @@ void ExportTradingHistory()
       FileWrite(handle, "[");
 
       // Select all history
-      HistorySelect(0, TimeCurrent());
+      HistorySelect(filterDate, TimeCurrent());
       int deals_total = HistoryDealsTotal();
       double balance = 0; // Initial balance
-int totalPositions = PositionsTotal();
+      int totalPositions = PositionsTotal();
       // Export orders and balance changes
       int orders_total = HistoryOrdersTotal();
       int order_index = 0;
@@ -108,8 +109,9 @@ int totalPositions = PositionsTotal();
             }
             
             // Write order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
-            if(order_index < orders_total - 1 || totalPositions > 0) {
+            string serverName = AccountInfoString(ACCOUNT_SERVER);
+         string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", serverName, order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
+         if(order_index < orders_total - 1 || totalPositions > 0) {
             FileWrite(handle, json + ",");
          } else {
             FileWrite(handle, json);
@@ -127,7 +129,8 @@ int totalPositions = PositionsTotal();
                ulong order_ticket_for_deal = HistoryDealGetInteger(deal_ticket, DEAL_ORDER);
 
                // Write balance change as JSON object
-               string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"BALANCECHANGE\",\"Order_ID\":%d,\"Time\":%d,\"Amount\":%.2f,\"Balance\":%.2f}", order_ticket_for_deal, deal_time, amount, balance);
+               string serverName = AccountInfoString(ACCOUNT_SERVER);
+               string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"BALANCECHANGE\",\"Order_ID\":%d,\"Time\":%d,\"Amount\":%.2f,\"Balance\":%.2f}", serverName, order_ticket_for_deal, deal_time, amount, balance);
                if(order_index < orders_total - 1 || totalPositions > 0) {
             FileWrite(handle, json + ",");
          } else {
@@ -152,6 +155,7 @@ int totalPositions = PositionsTotal();
 
 void ExportOpenPositions()
 {
+   
    int handle = FileOpen(FileName, FILE_READ|FILE_WRITE|FILE_TXT|FILE_ANSI);
    if(handle != INVALID_HANDLE)
    {
@@ -172,7 +176,8 @@ void ExportOpenPositions()
             datetime time = TimeCurrent(); // Get the current server time
             
             // Write open order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
+            string serverName = AccountInfoString(ACCOUNT_SERVER);
+            string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", serverName, ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
             if(i < total - 1) {
             FileWrite(handle, json + ",");
          } else {

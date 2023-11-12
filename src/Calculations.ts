@@ -200,29 +200,39 @@ function getWeek(date: Date): number {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 export function calculateDrawdown(orders: JSONHistory): { maxDrawdownDollars: number; maxDrawdownPercent: number } {
-  let highestBalance = 0;
-  let drawdownDollars = 0;
-  let drawdownPercent = 0;
+  try {
+    let highestBalance = 0;
+    let drawdownDollars = 0;
+    let drawdownPercent = 0;
 
-  orders.forEach((order) => {
-    if ('Balance' in order) {
-      if (order.Balance > highestBalance) {
-        highestBalance = order.Balance;
-        return;
+    orders.forEach((order) => {
+      if ('Balance' in order) {
+        if (order.Platform === 'MT4' && order.Transaction_Type === 'DEPOSIT') {
+          highestBalance += order.Profit;
+        } else if (order.Platform === 'MT5' && order.Type === 'BALANCECHANGE' && order.Amount > 0) {
+          highestBalance += order.Amount;
+        }
+
+        if (order.Balance > highestBalance) {
+          highestBalance = order.Balance;
+        }
+
+        const currentDrawdownDollars = highestBalance - order.Balance;
+        if (currentDrawdownDollars > drawdownDollars) {
+          drawdownDollars = currentDrawdownDollars;
+        }
+
+        if (currentDrawdownDollars / highestBalance > drawdownPercent) {
+          drawdownPercent = (drawdownDollars / highestBalance) * 100;
+        }
       }
+    });
 
-      const currentDrawdownDollars = highestBalance - order.Balance;
-      if (currentDrawdownDollars > drawdownDollars) {
-        drawdownDollars = currentDrawdownDollars;
-      }
-
-      if (currentDrawdownDollars / highestBalance > drawdownPercent) {
-        drawdownPercent = (drawdownDollars / highestBalance) * 100; // 1 - ovo
-      }
-    }
-  });
-
-  return { maxDrawdownDollars: +drawdownDollars.toFixed(2), maxDrawdownPercent: +drawdownPercent.toFixed(2) };
+    return { maxDrawdownDollars: +drawdownDollars.toFixed(2), maxDrawdownPercent: +drawdownPercent.toFixed(2) };
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateDrawdown()`);
+  }
 }
 
 export function calculateTotalDepositsAndWithdrawals(orders: JSONHistory): {

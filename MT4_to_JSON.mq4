@@ -22,6 +22,7 @@ string OrderTypeToString(int orderType) {
 }
 
 extern string FileName = "TradingHistory.json"; // Input variable for the file name
+extern datetime StartDate = D'2022.01.01'; // Input variable for the date
 
 
 int start()
@@ -60,6 +61,8 @@ void ExportTradingHistory()
       {
          if(OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
          {
+            datetime open_time = OrderOpenTime();
+            if(open_time < StartDate) continue;
             // Export order
             string symbol = OrderSymbol();
             double volume = OrderLots();
@@ -89,11 +92,12 @@ void ExportTradingHistory()
             }
 
             // Get order open and close times
-            datetime open_time = OrderOpenTime();
+            
             datetime close_time = OrderCloseTime();
 
             // Write order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Close_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, close_time, type, price_open, price_current, profit, swap, commission, balance, comment, magic);
+            string serverName = AccountServer();
+            string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Close_Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", serverName, transaction_type, type, OrderTicket(), symbol, volume, open_time, close_time, type, price_open, price_current, profit, swap, commission, balance, comment, magic);
             
             // Check if it's the last order and if there are any open orders
             if(i < orders_total - 1 || open_orders_total > 0) {
@@ -127,6 +131,8 @@ void ExportOpenPositions()
       {
          if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
          {
+            datetime open_time = OrderOpenTime();
+            if(open_time < StartDate) continue;
             // Export order
             string symbol = OrderSymbol();
             double volume = OrderLots();
@@ -145,11 +151,11 @@ void ExportOpenPositions()
 
             string transaction_type = "OPEN_ORDER"; // Transaction type for open orders
 
-            // Get order open time
-            datetime open_time = OrderOpenTime();
+           
 
             // Write order as JSON object
-            string json = StringFormat("{\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", transaction_type, type, OrderTicket(), symbol, volume, open_time, type, price_open, price_current, profit, swap, commission, comment, magic);
+            string serverName = AccountServer();
+string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT4\",\"Transaction_Type\":\"%s\",\"Type\":\"%s\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.6f,\"Current_Price\":%.6f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Comment\":\"%s\",\"Magic\":%lld}", serverName, transaction_type, type, OrderTicket(), symbol, volume, open_time, type, price_open, price_current, profit, swap, commission, comment, magic);
             // Check if it's the last order
             if(i < open_orders_total - 1) {
                 FileWrite(handle, json + ",");
