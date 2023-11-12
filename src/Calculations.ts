@@ -1,4 +1,4 @@
-import { JSONHistory, MT4, MainObjectType } from './MTtoJSON';
+import { JSONHistory, MT4, MainObjectType, OrderMT4, OrderMT5 } from './MTtoJSON';
 import * as math from 'mathjs';
 
 export function calculateTotalProfitOnlyClosed(JSON: JSONHistory, timestamp: number = 0): number {
@@ -205,34 +205,40 @@ export function calculateDrawdown(orders: JSONHistory): { maxDrawdownDollars: nu
     let highestBalance = 0;
     let drawdownDollars = 0;
     let drawdownPercent = 0;
+    let currentBalance = 0;
+    let totalPNL = 0;
+    let highestPNL = 0;
 
     orders.forEach((order) => {
-      if ('Balance' in order) {
-        if (order.Platform === 'MT4' && order.Transaction_Type === 'DEPOSIT') {
-          highestBalance += order.Profit;
-        } else if (order.Platform === 'MT5' && order.Type === 'BALANCECHANGE' && order.Amount > 0) {
-          highestBalance += order.Amount;
-        }
+      if (highestBalance === 0 && 'Balance' in order) {
+        highestBalance = order.Balance;
+      }
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        totalPNL = totalPNL + order.Profit + order.Swap + order.Commission;
 
-        if (order.Balance > highestBalance) {
+        if (totalPNL > highestPNL) {
+          highestPNL = totalPNL;
           highestBalance = order.Balance;
         }
+      }
 
-        const currentDrawdownDollars = highestBalance - order.Balance;
-        if (currentDrawdownDollars > drawdownDollars) {
-          drawdownDollars = currentDrawdownDollars;
-        }
+      const currentDrawdownDollars = highestPNL - totalPNL;
+      if (currentDrawdownDollars > drawdownDollars) {
+        drawdownDollars = currentDrawdownDollars;
+      }
 
-        if (currentDrawdownDollars / highestBalance > drawdownPercent) {
-          drawdownPercent = (drawdownDollars / highestBalance) * 100;
-        }
+      if (currentDrawdownDollars / highestBalance > drawdownPercent) {
+        drawdownPercent = (currentDrawdownDollars / highestBalance) * 100;
       }
     });
 
     return { maxDrawdownDollars: +drawdownDollars.toFixed(2), maxDrawdownPercent: +drawdownPercent.toFixed(2) };
   } catch (err) {
     console.error(err);
-    throw new Error(`calculateDrawdown()`);
+    throw new Error(`calculateNewDrawdown()`);
   }
 }
 
@@ -470,7 +476,6 @@ export function calculateWinLossPercentage(orders: JSONHistory): { winPercentage
 export function getPerformanceTable(orders: JSONHistory): {
   balance: number;
   equity: number;
-  totalProfit: number;
   initialBalance: number;
   totalWithdrawalDeposit: { totalDeposits: number; totalWithdrawals: number };
   profitFactor: number;
@@ -516,6 +521,7 @@ export function getPerformanceTable(orders: JSONHistory): {
         (order.Platform === 'MT5' && order.Type === 'ORDER')
       ) {
         const total = order.Profit + order.Swap + order.Commission;
+
         if (total > 0) {
           totalProfit += total;
         } else {
@@ -531,7 +537,6 @@ export function getPerformanceTable(orders: JSONHistory): {
     return {
       balance,
       equity,
-      totalProfit: +totalProfit.toFixed(2),
       initialBalance,
       totalWithdrawalDeposit,
       profitFactor,
@@ -579,7 +584,7 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
           winCount++;
           totalProfit += total;
           winPercentages.push(percentage);
-        } else {
+        } else if (total < 0) {
           lossCount++;
           totalLosses += total;
           lossPercentages.push(percentage);
@@ -600,7 +605,7 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
     const totalTrades = winCount + lossCount;
     const expectedPayoff = totalProfit / totalTrades;
 
-    const weeks = (lastOrderTimestamp! - firstOrderTimestamp!) / (1000 * 60 * 60 * 24 * 7);
+    const weeks = (lastOrderTimestamp! - firstOrderTimestamp!) / (60 * 60 * 24 * 7);
     const tradesPerWeek = totalTrades / weeks;
 
     return {
@@ -701,9 +706,9 @@ export function calculateBuySellPercentage(orders: JSONHistory): {
 export function calculateRecoveryFactor(orders: JSONHistory): number {
   try {
     const drawdownData = calculateDrawdown(orders);
-    const performanceTable = getPerformanceTable(orders);
+    const avgWinLoss = calculateAverageWinLoss(orders);
 
-    const totalProfit = performanceTable.totalProfit;
+    const totalProfit = avgWinLoss.totalProfit;
     const maxDrawdown = drawdownData.maxDrawdownDollars;
 
     const recoveryFactor = totalProfit / maxDrawdown;
@@ -740,9 +745,63 @@ export function calculateSharpeRatio(orders: JSONHistory): number {
 
     const sharpeRatio = meanReturn / stdDevReturn;
 
-    return sharpeRatio;
+    return +sharpeRatio.toFixed(2);
   } catch (err) {
     console.error(err);
     throw new Error(`calculateSharpeRatio()`);
+  }
+}
+
+interface OpenOrder {
+  order: OrderMT5;
+  remainingVolume: number;
+}
+export function calculateAverageHoldingTime(orders: JSONHistory): number {
+  try {
+    let totalHoldingTime = 0;
+    let orderCount = 0;
+
+    const openOrders: OpenOrder[] = [];
+
+    orders.forEach((order) => {
+      if (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') {
+        const mt4Order = order as OrderMT4;
+        const holdingTime = mt4Order.Close_Time - mt4Order.Time;
+        totalHoldingTime += holdingTime;
+        orderCount++;
+      } else if (order.Platform === 'MT5' && order.Type === 'ORDER') {
+        const mt5Order = order as OrderMT5;
+
+        if (mt5Order.Order_Type === 'ORDER_TYPE_BUY' || mt5Order.Order_Type === 'ORDER_TYPE_SELL') {
+          openOrders.push({ order: mt5Order, remainingVolume: mt5Order.Volume });
+        }
+
+        for (const openOrder of openOrders) {
+          if (
+            openOrder.order.Symbol === mt5Order.Symbol &&
+            openOrder.remainingVolume > 0 &&
+            openOrder.order.Order_Type !== mt5Order.Order_Type
+          ) {
+            const volumeToClose = Math.min(openOrder.remainingVolume, mt5Order.Volume);
+            const holdingTime = mt5Order.Time - openOrder.order.Time;
+
+            totalHoldingTime += holdingTime * volumeToClose;
+            orderCount += volumeToClose;
+
+            openOrder.remainingVolume -= volumeToClose;
+            if (openOrder.remainingVolume <= 0) {
+              break;
+            }
+          }
+        }
+      }
+    });
+
+    const averageHoldingTime = totalHoldingTime / orderCount / 60;
+
+    return averageHoldingTime;
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateAverageHoldingTime()`);
   }
 }

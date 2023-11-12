@@ -6,8 +6,6 @@ fix all % calculations
 
 So I need to:
 
-- add metrics that are missing ( Average holding time and annual forecast)
-
 - add licencing
  */
 
@@ -16,6 +14,7 @@ import path from 'path';
 import * as calcs from './Calculations';
 
 export interface OrderMT5 {
+  Server: string;
   Platform: 'MT5';
   Type: 'ORDER';
   Order_ID: number;
@@ -31,6 +30,7 @@ export interface OrderMT5 {
   Balance: number;
 }
 export interface OpenOrderMT5 {
+  Server: string;
   Platform: 'MT5';
   Type: 'OPEN_ORDER';
   Time: number;
@@ -44,6 +44,7 @@ export interface OpenOrderMT5 {
   Commission: number;
 }
 export interface BalanceChangeMT5 {
+  Server: string;
   Platform: 'MT5';
   Type: 'BALANCECHANGE';
   Order_ID: 0;
@@ -52,6 +53,7 @@ export interface BalanceChangeMT5 {
   Balance: number;
 }
 export interface OrderMT4 {
+  Server: string;
   Platform: 'MT4';
   Transaction_Type: 'ORDER' | 'OPEN_ORDER' | 'WITHDRAWAL' | 'DEPOSIT';
   Type: string;
@@ -86,7 +88,6 @@ type Stats = {
   performanceTable: Partial<{
     balance: number;
     equity: number;
-    totalProfit: number;
     initialBalance: number;
     totalWithdrawalDeposit: { totalDeposits: number; totalWithdrawals: number };
     profitFactor: number;
@@ -234,13 +235,13 @@ export function mainCalculation(mainObject: MainObjectType) {
 }
 
 // MAIN EXECUTION
-//setInterval(() => {
-const mainObject = readJSONFiles();
-STATS = mainCalculation(mainObject);
-//console.log(STATS);
-console.dir(STATS, { depth: null });
-writeStatsToFile(STATS);
-//}, 60000);
+setInterval(() => {
+  const mainObject = readJSONFiles();
+  STATS = mainCalculation(mainObject);
+  //console.log(STATS);
+  console.dir(STATS, { depth: null });
+  writeStatsToFile(STATS);
+}, 60000);
 
 setInterval(() => {
   scanDir(sourceDir);

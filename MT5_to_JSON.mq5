@@ -90,6 +90,7 @@ void ExportTradingHistory()
                deal_ticket = HistoryDealGetTicket(deal_index);
                if(HistoryDealGetInteger(deal_ticket, DEAL_ORDER) == order_ticket)
                {
+                  
                   ENUM_DEAL_ENTRY deal_entry = (ENUM_DEAL_ENTRY)HistoryDealGetInteger(deal_ticket, DEAL_ENTRY);
                   if(deal_entry == DEAL_ENTRY_IN || deal_entry == DEAL_ENTRY_OUT)
                   {
@@ -110,7 +111,7 @@ void ExportTradingHistory()
             
             // Write order as JSON object
             string serverName = AccountInfoString(ACCOUNT_SERVER);
-         string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", serverName, order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
+         string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Time\":%d,\"Order_Type\":\"%s\",\"Open_Price\":%.5f,\"Current_Price\":%.5f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Balance\":%.2f}", serverName, order_ticket, symbol, volume, order_time, type, price_open, price_current, profit, swap, commission, balance);
          if(order_index < orders_total - 1 || totalPositions > 0) {
             FileWrite(handle, json + ",");
          } else {
@@ -177,7 +178,7 @@ void ExportOpenPositions()
             
             // Write open order as JSON object
             string serverName = AccountInfoString(ACCOUNT_SERVER);
-            string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.2f,\"Current_Price\":%.2f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", serverName, ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
+            string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT5\",\"Type\":\"OPEN_ORDER\",\"Order_ID\":%d,\"Symbol\":\"%s\",\"Volume\":%.2f,\"Order_Type\":\"%s\",\"Open_Price\":%.5f,\"Current_Price\":%.5f,\"Profit\":%.2f,\"Swap\":%.2f,\"Commission\":%.2f,\"Time\":%d}", serverName, ticket, symbol, volume, type, price_open, price_current, profit, swap, commission, time);
             if(i < total - 1) {
             FileWrite(handle, json + ",");
          } else {
