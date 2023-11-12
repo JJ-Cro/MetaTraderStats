@@ -1,4 +1,5 @@
 import { JSONHistory, MT4, MainObjectType } from './MTtoJSON';
+import * as math from 'mathjs';
 
 export function calculateTotalProfitOnlyClosed(JSON: JSONHistory, timestamp: number = 0): number {
   let totalProfit = 0;
@@ -548,6 +549,8 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
   totalLosses: number;
   averageWinReturnPct: number;
   averageLossReturnPct: number;
+  averageTradesPerWeek: number;
+  expectedPayoff: number;
 } {
   try {
     let winCount = 0;
@@ -557,6 +560,8 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
     let winPercentages: number[] = [];
     let lossPercentages: number[] = [];
     let previousBalance = 0;
+    let firstOrderTimestamp: number | null = null;
+    let lastOrderTimestamp: number | null = null;
 
     orders.forEach((order) => {
       if ('Balance' in order) {
@@ -579,6 +584,11 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
           totalLosses += total;
           lossPercentages.push(percentage);
         }
+
+        if (firstOrderTimestamp === null) {
+          firstOrderTimestamp = order.Time;
+        }
+        lastOrderTimestamp = order.Time;
       }
     });
 
@@ -587,6 +597,12 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
     const averageWinPercentage = winPercentages.reduce((a, b) => a + b, 0) / winPercentages.length;
     const averageLossPercentage = lossPercentages.reduce((a, b) => a + b, 0) / lossPercentages.length;
 
+    const totalTrades = winCount + lossCount;
+    const expectedPayoff = totalProfit / totalTrades;
+
+    const weeks = (lastOrderTimestamp! - firstOrderTimestamp!) / (1000 * 60 * 60 * 24 * 7);
+    const tradesPerWeek = totalTrades / weeks;
+
     return {
       averageWin: Number(averageWin.toFixed(2)),
       averageLoss: Number(averageLoss.toFixed(2)),
@@ -594,13 +610,14 @@ export function calculateAverageWinLoss(orders: JSONHistory): {
       totalLosses: Number(totalLosses.toFixed(2)),
       averageWinReturnPct: Number(averageWinPercentage.toFixed(2)),
       averageLossReturnPct: Number(averageLossPercentage.toFixed(2)),
+      averageTradesPerWeek: Number(tradesPerWeek.toFixed(2)),
+      expectedPayoff: Number(expectedPayoff.toFixed(2)),
     };
   } catch (err) {
     console.error(err);
     throw new Error(`calculateAverageWinLoss()`);
   }
 }
-
 export function calculateProfitAndTradesPerSymbol(orders: JSONHistory): {
   [symbol: string]: { totalProfit: number; tradeCount: number; winCount: number; lossCount: number };
 } {
@@ -678,5 +695,54 @@ export function calculateBuySellPercentage(orders: JSONHistory): {
   } catch (err) {
     console.error(err);
     throw new Error(`calculateBuySellPercentage()`);
+  }
+}
+
+export function calculateRecoveryFactor(orders: JSONHistory): number {
+  try {
+    const drawdownData = calculateDrawdown(orders);
+    const performanceTable = getPerformanceTable(orders);
+
+    const totalProfit = performanceTable.totalProfit;
+    const maxDrawdown = drawdownData.maxDrawdownDollars;
+
+    const recoveryFactor = totalProfit / maxDrawdown;
+
+    return Number(recoveryFactor.toFixed(2));
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateRecoveryFactor()`);
+  }
+}
+
+export function calculateSharpeRatio(orders: JSONHistory): number {
+  try {
+    let previousBalance = 0;
+    const returns: number[] = [];
+
+    orders.forEach((order) => {
+      if ('Balance' in order) {
+        previousBalance = order.Balance;
+      }
+
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        const total = order.Profit + order.Swap + order.Commission;
+        const returnForOrder = total / previousBalance;
+        returns.push(returnForOrder);
+      }
+    });
+
+    const meanReturn = Number(math.mean(returns));
+    const stdDevReturn = Number(math.std(returns));
+
+    const sharpeRatio = meanReturn / stdDevReturn;
+
+    return sharpeRatio;
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateSharpeRatio()`);
   }
 }

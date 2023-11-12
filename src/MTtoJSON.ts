@@ -6,7 +6,7 @@ fix all % calculations
 
 So I need to:
 
-- add metrics that are missing (Recovery Factor, Sharpe Ratio, Expected Payoff, Trades per week, Average holding time and annual forecast)
+- add metrics that are missing ( Average holding time and annual forecast)
 
 - add licencing
  */
@@ -96,6 +96,8 @@ type Stats = {
     totalProfitOpenPositions: number;
     totalOpenPositions: number;
     last24HoursProfit: number;
+    recoveryFactor: number;
+    sharpeRatio: number;
     totalWinRate: { winPercentage: number; lossPercentage: number };
     longShortRatio: { buyCount: number; sellCount: number; buyPercentage: number; sellPercentage: number };
     totalDrawdown: { maxDrawdownDollars: number; maxDrawdownPercent: number };
@@ -106,6 +108,8 @@ type Stats = {
       totalLosses: number;
       averageWinReturnPct: number;
       averageLossReturnPct: number;
+      averageTradesPerWeek: number;
+      expectedPayoff: number;
     };
     gainsPerMonthAbs: { [key: string]: number };
     gainsPerMonthPct: { [key: string]: number };
@@ -209,6 +213,8 @@ export function mainCalculation(mainObject: MainObjectType) {
         STATS[key].fullAccountReport!.longShortRatio = calcs.calculateBuySellPercentage(orders);
         STATS[key].fullAccountReport!.totalDrawdown = calcs.calculateDrawdown(orders);
         STATS[key].fullAccountReport!.Averages = calcs.calculateAverageWinLoss(orders);
+        STATS[key].fullAccountReport!.recoveryFactor = calcs.calculateRecoveryFactor(orders);
+        STATS[key].fullAccountReport!.sharpeRatio = calcs.calculateSharpeRatio(orders);
         STATS[key].fullAccountReport!.gainsPerMonthAbs = calcs.calculateMonthlyGainsABS(orders);
         STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders);
         STATS[key].fullAccountReport!.gainsPerWeekAbs = calcs.calculateWeeklyGainsABS(orders);
