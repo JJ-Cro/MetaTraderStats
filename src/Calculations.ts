@@ -200,14 +200,14 @@ function getWeek(date: Date): number {
   const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
-export function calculateDrawdown(orders: JSONHistory): { maxDrawdownDollars: number; maxDrawdownPercent: number } {
+export function calculateDrawdown(orders: JSONHistory): { maxDrawdownDollars: number } {
   try {
     let highestBalance = 0;
     let drawdownDollars = 0;
     let drawdownPercent = 0;
-    let currentBalance = 0;
     let totalPNL = 0;
     let highestPNL = 0;
+    let lastBalance = 0;
 
     orders.forEach((order) => {
       if (highestBalance === 0 && 'Balance' in order) {
@@ -225,17 +225,22 @@ export function calculateDrawdown(orders: JSONHistory): { maxDrawdownDollars: nu
         }
       }
 
-      const currentDrawdownDollars = highestPNL - totalPNL;
+      const currentDrawdownDollars = Math.abs(highestPNL - totalPNL);
       if (currentDrawdownDollars > drawdownDollars) {
         drawdownDollars = currentDrawdownDollars;
       }
 
-      if (currentDrawdownDollars / highestBalance > drawdownPercent) {
+      if ((currentDrawdownDollars / highestBalance) * 100 > drawdownPercent) {
         drawdownPercent = (currentDrawdownDollars / highestBalance) * 100;
+        // console.log(drawdownPercent, currentDrawdownDollars, lastBalance);
+      }
+
+      if ('Balance' in order) {
+        lastBalance = order.Balance;
       }
     });
 
-    return { maxDrawdownDollars: +drawdownDollars.toFixed(2), maxDrawdownPercent: +drawdownPercent.toFixed(2) };
+    return { maxDrawdownDollars: +drawdownDollars.toFixed(2) };
   } catch (err) {
     console.error(err);
     throw new Error(`calculateNewDrawdown()`);
@@ -803,5 +808,75 @@ export function calculateAverageHoldingTime(orders: JSONHistory): number {
   } catch (err) {
     console.error(err);
     throw new Error(`calculateAverageHoldingTime()`);
+  }
+}
+
+export function calculateMonthlyGraph(orders: JSONHistory): {
+  [key: string]: {
+    startBalance: number;
+    endBalance: number;
+    monthlyPNL: number;
+    totalDeposits: number;
+    totalWithdrawals: number;
+  };
+} {
+  try {
+    const monthlyResults: {
+      [key: string]: {
+        startBalance: number;
+        endBalance: number;
+        monthlyPNL: number;
+        totalDeposits: number;
+        totalWithdrawals: number;
+      };
+    } = {};
+
+    orders.forEach((order) => {
+      // Convert the order's timestamp to a Date object
+      const date = new Date(order.Time * 1000);
+
+      // Format the date as 'MonthYear', e.g. 'August22'
+      const monthYear = date.toLocaleString('en-US', { month: 'long' }) + date.getFullYear().toString().slice(-2);
+
+      // Initialize the monthYear in the results if it hasn't been seen before
+      if (!monthlyResults[monthYear] && 'Balance' in order) {
+        monthlyResults[monthYear] = {
+          startBalance: order.Balance,
+          endBalance: 0,
+          monthlyPNL: 0,
+          totalDeposits: 0,
+          totalWithdrawals: 0,
+        };
+      }
+
+      // Update the end balance and monthly PNL
+      if (
+        (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+        (order.Platform === 'MT5' && order.Type === 'ORDER')
+      ) {
+        monthlyResults[monthYear].endBalance = order.Balance;
+        monthlyResults[monthYear].monthlyPNL += order.Profit + order.Swap + order.Commission;
+      }
+
+      // Update the total deposits and withdrawals
+      if (order.Platform === 'MT4') {
+        if (order.Transaction_Type === 'DEPOSIT') {
+          monthlyResults[monthYear].totalDeposits += order.Profit;
+        } else if (order.Transaction_Type === 'WITHDRAWAL') {
+          monthlyResults[monthYear].totalWithdrawals += order.Profit;
+        }
+      } else if (order.Platform === 'MT5' && order.Type === 'BALANCECHANGE') {
+        if (order.Amount > 0) {
+          monthlyResults[monthYear].totalDeposits += order.Amount;
+        } else {
+          monthlyResults[monthYear].totalWithdrawals += Math.abs(order.Amount);
+        }
+      }
+    });
+
+    return monthlyResults;
+  } catch (err) {
+    console.error(err);
+    throw new Error(`calculateMonthlyResults()`);
   }
 }

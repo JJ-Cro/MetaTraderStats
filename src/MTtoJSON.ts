@@ -92,6 +92,15 @@ type Stats = {
     totalWithdrawalDeposit: { totalDeposits: number; totalWithdrawals: number };
     profitFactor: number;
   }>;
+  monthlyGraph: {
+    [key: string]: {
+      startBalance: number;
+      endBalance: number;
+      monthlyPNL: number;
+      totalDeposits: number;
+      totalWithdrawals: number;
+    };
+  };
   fullAccountReport: Partial<{
     totalRealisedPNLClosedAbs: number;
     totalProfitOpenPositions: number;
@@ -101,7 +110,7 @@ type Stats = {
     sharpeRatio: number;
     totalWinRate: { winPercentage: number; lossPercentage: number };
     longShortRatio: { buyCount: number; sellCount: number; buyPercentage: number; sellPercentage: number };
-    totalDrawdown: { maxDrawdownDollars: number; maxDrawdownPercent: number };
+    totalDrawdown: { maxDrawdownDollars: number };
     Averages: {
       averageWin: number;
       averageLoss: number;
@@ -181,7 +190,12 @@ export function readJSONFiles(): MainObjectType {
       const fileNameWithoutExtension = path.basename(file, '.json');
       files[fileNameWithoutExtension] = JSON.parse(rawData);
 
-      STATS[fileNameWithoutExtension] = { resultsStart: '', performanceTable: {}, fullAccountReport: {} };
+      STATS[fileNameWithoutExtension] = {
+        resultsStart: '',
+        monthlyGraph: {},
+        performanceTable: {},
+        fullAccountReport: {},
+      };
     });
 
     console.log(Object.keys(files));
@@ -203,6 +217,7 @@ export function mainCalculation(mainObject: MainObjectType) {
         // Use the calculation functions on the array of orders
         STATS[key].resultsStart = calcs.findEarliestEvent(orders);
         STATS[key].performanceTable = calcs.getPerformanceTable(orders);
+        STATS[key].monthlyGraph = calcs.calculateMonthlyGraph(orders);
         STATS[key].fullAccountReport!.totalRealisedPNLClosedAbs = calcs.calculateTotalProfitOnlyClosed(orders);
         STATS[key].fullAccountReport!.totalProfitOpenPositions = calcs.calculateTotalProfitOpenPositions(orders);
         STATS[key].fullAccountReport!.totalOpenPositions = calcs.numberOfOpenPositions(orders);
