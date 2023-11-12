@@ -243,5 +243,3 @@ writeStatsToFile(STATS);
 setInterval(() => {
   scanDir(sourceDir);
 }, 10000);
-
-
