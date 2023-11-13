@@ -20,5 +20,5 @@
     "resolveJsonModule": true,
     "types": ["node", "jest"]
   },
-  "include": ["./src", "./tests/src"]
+  "include": ["./src", "./tests/src", "./react/my-app/src"]
 }

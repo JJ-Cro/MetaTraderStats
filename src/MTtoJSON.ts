@@ -254,7 +254,7 @@ setInterval(() => {
   const mainObject = readJSONFiles();
   STATS = mainCalculation(mainObject);
   //console.log(STATS);
-  console.dir(STATS, { depth: null });
+  //console.dir(STATS, { depth: null });
   writeStatsToFile(STATS);
 }, 60000);
 
