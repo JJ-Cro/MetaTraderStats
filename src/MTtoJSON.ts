@@ -12,6 +12,7 @@ So I need to:
 import fs from 'fs';
 import path from 'path';
 import * as calcs from './Calculations';
+import { startServer } from './server';
 
 export interface OrderMT5 {
   Server: string;
@@ -147,8 +148,8 @@ type Stats = {
 let STATS: StatsInterface = {};
 
 // Recursive function to scan directories
-const sourceDir = 'C:\\Users\\Jerko\\AppData\\Roaming\\MetaQuotes\\Terminal'; // Replace with your source directory
-const targetDir = 'C:\\MTJsonData'; // Replace with your target directory
+const sourceDir = 'C:\\Users\\Jerko\\AppData\\Roaming\\MetaQuotes\\Terminal';
+const targetDir = 'C:\\MTJsonData';
 
 function scanDir(dir: string) {
   let counter = 0;
@@ -167,7 +168,7 @@ function scanDir(dir: string) {
 
 export function writeStatsToFile(stats: StatsInterface): void {
   try {
-    const dataDirectory = path.join(__dirname, '../data-output');
+    const dataDirectory = path.join(__dirname, '../../data-output');
     const filePath = path.join(dataDirectory, 'statsOutput.json');
     const data = JSON.stringify(stats, null, 2);
     fs.writeFileSync(filePath, data);
@@ -248,6 +249,8 @@ export function mainCalculation(mainObject: MainObjectType) {
     throw new Error(`mainCalculation()`);
   }
 }
+
+startServer();
 
 // MAIN EXECUTION
 setInterval(() => {

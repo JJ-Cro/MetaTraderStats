@@ -5,6 +5,7 @@ describe('findLongestStreaks', () => {
   it('should correctly calculate the longest winning and losing streaks', () => {
     const orders: JSONHistory = [
       {
+        Server: '',
         Platform: 'MT4',
         Transaction_Type: 'ORDER',
         Type: '',
@@ -24,6 +25,8 @@ describe('findLongestStreaks', () => {
         Magic: 0,
       },
       {
+        Server: '',
+
         Platform: 'MT4',
         Transaction_Type: 'ORDER',
         Type: '',
@@ -43,6 +46,8 @@ describe('findLongestStreaks', () => {
         Magic: 0,
       },
       {
+        Server: '',
+
         Platform: 'MT4',
         Transaction_Type: 'ORDER',
         Type: '',
@@ -62,6 +67,8 @@ describe('findLongestStreaks', () => {
         Magic: 0,
       },
       {
+        Server: '',
+
         Platform: 'MT4',
         Transaction_Type: 'ORDER',
         Type: '',
@@ -81,6 +88,8 @@ describe('findLongestStreaks', () => {
         Magic: 0,
       },
       {
+        Server: '',
+
         Platform: 'MT4',
         Transaction_Type: 'ORDER',
         Type: '',
@@ -111,4 +120,3 @@ describe('findLongestStreaks', () => {
     });
   });
 });
-
