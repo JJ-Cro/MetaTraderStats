@@ -23,10 +23,30 @@ string OrderTypeToString(int orderType) {
 
 extern string FileName = "TradingHistory.json"; // Input variable for the file name
 extern datetime StartDate = D'2022.01.01'; // Input variable for the date
+extern string LicenseKey = ""; // User will enter their license key here
+bool isLicenseValid = false;
 
+
+int init() {
+    if(!IsLicenseKeyValid(AccountNumber(), Symbol(), LicenseKey)) {
+        MessageBox("Invalid license key for symbol " + Symbol(), "Error", MB_ICONERROR);
+        Print("Invalid license key, algo stopping.");
+        isLicenseValid = false;
+        return INIT_FAILED;
+    }
+    isLicenseValid = true;
+    Print("Licence key VALID!");
+     return 0;
+    // ... rest of your initialization logic
+}
 
 int start()
 {
+   if(!isLicenseValid){ 
+   Print("Invalid license key, MTTOJSON will not log!");
+   return 0;};
+
+
    datetime current_time = TimeCurrent();
    MqlDateTime time_structure;
    TimeToStruct(current_time, time_structure);
@@ -172,4 +192,14 @@ string json = StringFormat("{\"Server\":\"%s\",\"Platform\":\"MT4\",\"Transactio
    {
       Print("Failed to open file: ", GetLastError());
    }
+}
+
+bool IsLicenseKeyValid(int accountNumber, string symbol, string licenseKey) {
+    string expectedElements = IntegerToString(accountNumber) + symbol;
+    for(int i = 0; i < StringLen(expectedElements); i++) {
+        if(StringFind(licenseKey, StringSubstr(expectedElements, i, 1)) == -1) {
+            return false;
+        }
+    }
+    return true;
 }

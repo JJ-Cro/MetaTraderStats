@@ -9,12 +9,25 @@
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
+
+bool isLicenseValid = false;
+input string FileName = "TradingHistory.json"; // Input variable for the file name
+input string StartDate = "2020.01.01"; // Input variable for the date
+input string LicenseKey = ""; // User will enter their license key here
+
+
 int OnInit()
   {
-//---
+    if(!IsLicenseKeyValid(AccountInfoInteger(ACCOUNT_LOGIN), Symbol(), LicenseKey)) {
+        MessageBox("Invalid license key for symbol " + string(Symbol()), "Error", MB_ICONERROR);
+        Print("Invalid license key, algo stopping.");
+        isLicenseValid = false;
+        return(INIT_SUCCEEDED);
+    }
+      isLicenseValid = true;
+    //---
    
-//---
-   return(INIT_SUCCEEDED);
+    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
@@ -27,13 +40,15 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
-input string FileName = "TradingHistory.json"; // Input variable for the file name
-input string StartDate = "2020.01.01"; // Input variable for the date
+
+
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
-{
+{  
+   if(!isLicenseValid){Print("Invalid license key!"); return;}
+
    datetime current_time = TimeCurrent();
    MqlDateTime time_structure;
    TimeToStruct(current_time, time_structure);
@@ -193,4 +208,15 @@ void ExportOpenPositions()
    {
       Print("Failed to open file: ", GetLastError());
    }
+}
+
+
+bool IsLicenseKeyValid(long accountNumber, string symbol, string licenseKey) {
+    string expectedElements = IntegerToString(accountNumber) + symbol;
+    for(int i = 0; i < StringLen(expectedElements); i++) {
+        if(StringFind(licenseKey, StringSubstr(expectedElements, i, 1)) == -1) {
+            return false;
+        }
+    }
+    return true;
 }
