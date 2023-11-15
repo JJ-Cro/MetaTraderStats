@@ -1,0 +1,9 @@
+.chart-style {
+    width: 25%;
+    height: 25%;
+    background-color: #F5F5F5; /* Light gray */
+    border: 1px solid #D3D3D3; /* Lighter gray */
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
