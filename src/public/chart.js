@@ -194,14 +194,7 @@ function createGainsPerMonthChart(data, trader) {
     });
 
     // Set the size of the chart
-    $chart.css({
-      width: '25%', // Adjust the width here
-      height: '25%', // Adjust the height here
-      backgroundColor: '#ecf0f1', // Light gray
-      border: '1px solid #D3D3D3', // Lighter gray
-      borderRadius: '5px',
-      padding: '10px',
-    });
+    $chart.addClass('chart-style');
 
     return $chart;
   } catch (err) {
@@ -229,6 +222,15 @@ function createGainsPerMonthPctChart(data, trader) {
         valueField: 'gainsPct',
         name: 'Gains %',
         type: 'bar',
+        color: '#6495ED', // Cornflower blue
+        label: {
+          visible: true,
+          position: 'top',
+          backgroundColor: 'transparent',
+          customizeText: function (point) {
+            return point.valueText;
+          },
+        },
       },
     ],
     legend: {
@@ -244,6 +246,8 @@ function createGainsPerMonthPctChart(data, trader) {
       },
     },
   });
+
+  $chart.addClass('chart-style');
 
   return $chart;
 }
@@ -370,6 +374,15 @@ function createGainsPerWeekChart(data, trader) {
           valueField: 'gains',
           name: 'Gains',
           type: 'bar',
+          color: '#6495ED', // Cornflower blue
+          label: {
+            visible: true,
+            position: 'top',
+            backgroundColor: 'transparent',
+            customizeText: function (point) {
+              return point.valueText;
+            },
+          },
         },
       ],
       legend: {
@@ -385,6 +398,8 @@ function createGainsPerWeekChart(data, trader) {
         },
       },
     });
+
+    $chart.addClass('chart-style');
 
     return $chart;
   } catch (err) {
@@ -413,6 +428,15 @@ function createGainsPerWeekPctChart(data, trader) {
           valueField: 'gainsPct',
           name: 'Gains %',
           type: 'bar',
+          color: '#6495ED', // Cornflower blue
+          label: {
+            visible: true,
+            position: 'top',
+            backgroundColor: 'transparent',
+            customizeText: function (point) {
+              return point.valueText;
+            },
+          },
         },
       ],
       legend: {
@@ -428,6 +452,8 @@ function createGainsPerWeekPctChart(data, trader) {
         },
       },
     });
+
+    $chart.addClass('chart-style');
 
     return $chart;
   } catch (err) {
@@ -582,21 +608,29 @@ $(function () {
           var $monthlyGraph = createMonthlyGraph(data, trader);
           $container.append($monthlyGraph);
 
+          // Create a container for the bar charts
+          var $barChartsContainer = $('<div>').css({
+            display: 'flex',
+            justifyContent: 'space-around',
+            flexWrap: 'wrap',
+          });
+          $container.append($barChartsContainer);
+
           // Call the function to create the gains per month chart
           var $gainsChart = createGainsPerMonthChart(data, trader);
-          $container.append($gainsChart);
+          $barChartsContainer.append($gainsChart);
 
           // Call the function to create the gains per month percentage chart
           var $gainsPctChart = createGainsPerMonthPctChart(data, trader);
-          $container.append($gainsPctChart);
+          $barChartsContainer.append($gainsPctChart);
 
           // Call the function to create the gains per week chart
           var $gainsWeekChart = createGainsPerWeekChart(data, trader);
-          $container.append($gainsWeekChart);
+          $barChartsContainer.append($gainsWeekChart);
 
           // Call the function to create the gains per week percentage chart
           var $gainsWeekPctChart = createGainsPerWeekPctChart(data, trader);
-          $container.append($gainsWeekPctChart);
+          $barChartsContainer.append($gainsWeekPctChart);
 
           // Create a container for the pie charts
           var $pieChartsContainer = $('<div>').css({
