@@ -1,84 +1,104 @@
 // Function to create the monthly graph
 function createMonthlyGraph(data, trader) {
-  var monthlyGraph = Object.keys(data[trader].monthlyGraph).map(function (month) {
-    return {
-      month: month,
-      startBalance: data[trader].monthlyGraph[month].startBalance,
-      endBalance: data[trader].monthlyGraph[month].endBalance,
-      totalDeposits: data[trader].monthlyGraph[month].totalDeposits,
-      totalWithdrawals: data[trader].monthlyGraph[month].totalWithdrawals,
-      monthlyPNL: data[trader].monthlyGraph[month].monthlyPNL,
-    };
-  });
+  try {
+    var monthlyGraph = Object.keys(data[trader].monthlyGraph).map(function (month) {
+      return {
+        month: month,
+        startBalance: data[trader].monthlyGraph[month].startBalance,
+        endBalance: data[trader].monthlyGraph[month].endBalance,
+        totalDeposits: data[trader].monthlyGraph[month].totalDeposits,
+        totalWithdrawals: data[trader].monthlyGraph[month].totalWithdrawals,
+        monthlyPNL: data[trader].monthlyGraph[month].monthlyPNL,
+      };
+    });
 
-  var $chart = $('<div>').dxChart({
-    dataSource: monthlyGraph,
-    commonSeriesSettings: {
-      argumentField: 'month',
-    },
-    series: [
-      {
-        valueField: 'startBalance',
-        name: 'Start Balance',
-        type: 'line',
+    var $chart = $('<div>').dxChart({
+      dataSource: monthlyGraph,
+      commonSeriesSettings: {
+        argumentField: 'month',
       },
-      {
-        valueField: 'endBalance',
-        name: 'End Balance',
-        type: 'line',
+      series: [
+        {
+          valueField: 'startBalance',
+          name: 'Start Balance',
+          type: 'line',
+          color: '#2980b9', // Strong blue
+        },
+        {
+          valueField: 'endBalance',
+          name: 'End Balance',
+          type: 'line',
+          color: '#27ae60', // Green
+        },
+        {
+          valueField: 'totalDeposits',
+          name: 'Total Deposits',
+          type: 'bar',
+          color: '#f39c12', // Orange
+        },
+        {
+          valueField: 'totalWithdrawals',
+          name: 'Total Withdrawals',
+          type: 'bar',
+          color: '#c0392b', // Red
+        },
+        {
+          valueField: 'monthlyPNL',
+          name: 'Monthly PNL',
+          type: 'bar',
+          color: '#8e44ad', // Purple
+        },
+      ],
+      legend: {
+        visible: true,
+        verticalAlignment: 'bottom',
+        horizontalAlignment: 'center',
       },
-      {
-        valueField: 'totalDeposits',
-        name: 'Total Deposits',
-        type: 'bar',
+      title: 'Monthly Data',
+      tooltip: {
+        enabled: true,
+        customizeTooltip: function (arg) {
+          return {
+            text: arg.seriesName + ': ' + arg.valueText,
+          };
+        },
       },
-      {
-        valueField: 'totalWithdrawals',
-        name: 'Total Withdrawals',
-        type: 'bar',
-      },
-      {
-        valueField: 'monthlyPNL',
-        name: 'Monthly PNL',
-        type: 'bar',
-      },
-    ],
-    legend: {
-      visible: true,
-      verticalAlignment: 'bottom',
-      horizontalAlignment: 'center',
-    },
-    title: 'Monthly Data',
-    tooltip: {
-      enabled: true,
-      customizeTooltip: function (arg) {
-        return {
-          text: arg.seriesName + ': ' + arg.valueText,
-        };
-      },
-    },
-  });
+    });
 
-  return $chart;
+    // Change the background color of the chart
+    $chart.css('backgroundColor', '#ecf0f1'); // Light gray
+    $chart.css({
+      width: '50%', // Adjust the width here
+      height: '50%', // Adjust the height here
+    });
+    return $chart;
+  } catch (err) {
+    console.error(err);
+    ErrorLogger(err, `createMonthlyGraph()`);
+  }
 }
 
 // Function to create the performance table
 function createPerformanceData(data, trader) {
-  var performanceData = data[trader].performanceTable;
-  var fullAccountReport = data[trader].fullAccountReport;
-  var $performanceData = $('<table>').css({
-    width: '100%',
-    borderCollapse: 'collapse',
+  const performanceData = data[trader].performanceTable;
+  const fullAccountReport = data[trader].fullAccountReport;
+  const $performanceData = $('<div>').css({
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: '10px',
+    padding: '10px',
+    alignItems: 'center',
+    justifyContent: 'center',
   });
 
   // Existing performance data
   Object.keys(performanceData).forEach(function (key) {
-    var value = performanceData[key];
+    const value = performanceData[key];
     appendData($performanceData, key, value);
   });
 
   // Additional data
-  var additionalDataKeys = [
+  const additionalDataKeys = [
     'totalRealisedPNLClosedAbs',
     'totalProfitOpenPositions',
     'totalOpenPositions',
@@ -93,7 +113,7 @@ function createPerformanceData(data, trader) {
     'BiggestWinLoss',
   ];
   additionalDataKeys.forEach(function (key) {
-    var value = fullAccountReport[key];
+    const value = fullAccountReport[key];
     appendData($performanceData, key, value);
   });
 
@@ -101,61 +121,93 @@ function createPerformanceData(data, trader) {
 }
 
 function appendData($container, key, value) {
-  var $row = $('<tr>');
-  var $keyCell = $('<td>').text(key).css({ padding: '10px', fontWeight: 'bold' });
-  $row.append($keyCell);
+  const $dataContainer = $('<div>').css({
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    padding: '10px',
+    backgroundColor: '#f9f9f9',
+    marginBottom: '10px',
+  });
+  const $keyElement = $('<h4>').text(key).css({ margin: '0', fontWeight: 'bold' });
 
+  // Check if the value is an object
   if (typeof value === 'object' && value !== null) {
-    // If the value is an object, create a cell for each property
-    Object.keys(value).forEach(function (subKey) {
-      var $valueCell = $('<td>')
-        .text(subKey + ': ' + value[subKey])
-        .css({ padding: '10px' });
-      $row.append($valueCell);
+    // Convert the object to a string of key-value pairs
+    value = Object.entries(value).map(([k, v]) => {
+      const $propertyContainer = $('<div>');
+      const $propertyKey = $('<span>').text(`${k}: `).css({ fontWeight: 'bold' });
+      const $propertyValue = $('<span>').text(v).css({ fontStyle: 'italic' });
+      $propertyContainer.append($propertyKey, $propertyValue);
+      return $propertyContainer;
     });
   } else {
-    var $valueCell = $('<td>').text(value).css({ padding: '10px' });
-    $row.append($valueCell);
+    value = $('<span>').text(value).css({ fontStyle: 'italic' });
   }
 
-  $container.append($row);
+  $dataContainer.append($keyElement, ...value);
+  $container.append($dataContainer);
 }
+
 // Function to create the gains per month chart
 function createGainsPerMonthChart(data, trader) {
-  var gainsPerMonth = Object.keys(data[trader].fullAccountReport.gainsPerMonthAbs).map(function (month) {
-    return {
-      month: month,
-      gains: data[trader].fullAccountReport.gainsPerMonthAbs[month],
-    };
-  });
+  try {
+    var gainsPerMonth = Object.keys(data[trader].fullAccountReport.gainsPerMonthAbs).map(function (month) {
+      return {
+        month: month,
+        gains: data[trader].fullAccountReport.gainsPerMonthAbs[month],
+      };
+    });
 
-  var $chart = $('<div>').dxChart({
-    dataSource: gainsPerMonth,
-    commonSeriesSettings: {
-      argumentField: 'month',
-    },
-    series: [
-      {
-        valueField: 'gains',
-        name: 'Gains',
-        type: 'bar',
+    var $chart = $('<div>').dxChart({
+      dataSource: gainsPerMonth,
+      commonSeriesSettings: {
+        argumentField: 'month',
       },
-    ],
-    legend: {
-      visible: false,
-    },
-    title: 'Gains Per Month in $',
-    tooltip: {
-      enabled: true,
-      customizeTooltip: function (arg) {
-        return {
-          text: arg.seriesName + ': ' + arg.valueText,
-        };
+      series: [
+        {
+          valueField: 'gains',
+          name: 'Gains',
+          type: 'bar',
+          color: '#6495ED', // Cornflower blue
+          label: {
+            visible: true,
+            position: 'top',
+            backgroundColor: 'transparent',
+            customizeText: function (point) {
+              return point.valueText;
+            },
+          },
+        },
+      ],
+      legend: {
+        visible: false,
       },
-    },
-  });
+      title: 'Gains Per Month in $',
+      tooltip: {
+        enabled: true,
+        customizeTooltip: function (arg) {
+          return {
+            text: arg.seriesName + ': ' + arg.valueText,
+          };
+        },
+      },
+    });
 
-  return $chart;
+    // Set the size of the chart
+    $chart.css({
+      width: '25%', // Adjust the width here
+      height: '25%', // Adjust the height here
+      backgroundColor: '#ecf0f1', // Light gray
+      border: '1px solid #D3D3D3', // Lighter gray
+      borderRadius: '5px',
+      padding: '10px',
+    });
+
+    return $chart;
+  } catch (err) {
+    console.error(err);
+    ErrorLogger(err, `createGainsPerMonthChart()`);
+  }
 }
 
 // Function to create the gains per month percentage chart
