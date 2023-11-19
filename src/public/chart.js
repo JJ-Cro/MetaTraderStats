@@ -68,8 +68,8 @@ function createMonthlyGraph(data, trader) {
     // Change the background color of the chart
     $chart.css('backgroundColor', '#ecf0f1'); // Light gray
     $chart.css({
-      width: '50%', // Adjust the width here
-      height: '50%', // Adjust the height here
+      width: '100%', // Adjust the width here
+      height: '100%', // Adjust the height here
     });
     return $chart;
   } catch (err) {
