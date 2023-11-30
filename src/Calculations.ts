@@ -88,6 +88,7 @@ export function calculateMonthlyGainsABS(orders: JSONHistory): { [key: string]: 
   }
   return monthlyGains;
 }
+
 export function calculateMonthlyGainsPCT(orders: JSONHistory): { [key: string]: number } {
   const monthlyGains: { [key: string]: number } = {};
   const monthlyStartingBalances: { [key: string]: number } = {};
@@ -192,6 +193,48 @@ export function calculateWeeklyGainsPCT(orders: JSONHistory): { [key: string]: n
   }
 
   return weeklyGains;
+}
+
+export function calculateDailyGainsABS(orders: JSONHistory): { [key: string]: { profit: number; balance: number } } {
+  const dailyGains: { [key: string]: { profit: number; balance: number } } = {};
+
+  orders.forEach((order) => {
+    if (
+      (order.Platform === 'MT4' && order.Transaction_Type === 'ORDER') ||
+      (order.Platform === 'MT5' && order.Type === 'ORDER')
+    ) {
+      // Convert the order's timestamp to a Date object
+      const date = new Date(order.Time * 1000);
+
+      // Format the date as 'DD-MM-YYYY'
+      const dayMonthYear =
+        date.getDate().toString().padStart(2, '0') +
+        '-' +
+        (date.getMonth() + 1).toString().padStart(2, '0') +
+        '-' +
+        date.getFullYear();
+
+      // If this dayMonthYear hasn't been seen before, initialize it with 0
+      if (!dailyGains[dayMonthYear]) {
+        dailyGains[dayMonthYear] = { profit: 0, balance: 0 };
+      }
+
+      // Add the order's profit to the total for this dayMonthYear
+      dailyGains[dayMonthYear].profit += order.Profit + order.Swap + order.Commission;
+
+      // Update the balance if it exists in the order
+      if ('Balance' in order) {
+        dailyGains[dayMonthYear].balance = order.Balance;
+      }
+    }
+  });
+
+  // Convert all profit values to two decimal places
+  for (const dayMonthYear in dailyGains) {
+    dailyGains[dayMonthYear].profit = +dailyGains[dayMonthYear].profit.toFixed(2);
+  }
+
+  return dailyGains;
 }
 
 // Helper function to get the week number

@@ -126,6 +126,7 @@ type Stats = {
     gainsPerMonthPct: { [key: string]: number };
     gainsPerWeekAbs: { [key: string]: number };
     gainsPerWeekPct: { [key: string]: number };
+    gainsPerDay: { [key: string]: { profit: number; balance: number } };
     WinLossStreaks: {
       longestWinningStreak: number;
       longestLosingStreak: number;
@@ -232,6 +233,7 @@ export function mainCalculation(mainObject: MainObjectType) {
         STATS[key].fullAccountReport!.Averages = calcs.calculateAverageWinLoss(orders);
         STATS[key].fullAccountReport!.recoveryFactor = calcs.calculateRecoveryFactor(orders);
         STATS[key].fullAccountReport!.sharpeRatio = calcs.calculateSharpeRatio(orders);
+        STATS[key].fullAccountReport!.gainsPerDay = calcs.calculateDailyGainsABS(orders);
         STATS[key].fullAccountReport!.gainsPerMonthAbs = calcs.calculateMonthlyGainsABS(orders);
         STATS[key].fullAccountReport!.gainsPerMonthPct = calcs.calculateMonthlyGainsPCT(orders);
         STATS[key].fullAccountReport!.gainsPerWeekAbs = calcs.calculateWeeklyGainsABS(orders);
